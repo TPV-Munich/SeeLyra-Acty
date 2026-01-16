@@ -8,9 +8,10 @@
   <meta name="color-scheme" content="light dark" />
   <style>
     :root{
+      /* One brand color everywhere */
       --accent:#089ca4;
 
-      /* Dark default */
+      /* Dark theme defaults */
       --bg:#0b1020; --bg-2:#0f152e; --card:rgba(255,255,255,.08);
       --text:#e8ecf4; --muted:#b7c1d6;
       --ring:0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent);
@@ -34,22 +35,37 @@
 
     .wrap{ max-width:1100px; margin:clamp(16px,3.5vw,48px) auto; padding:0 16px; }
 
-    /* Header */
-    .header{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }
-    .brand{ display:flex; align-items:center; gap:12px; font-weight:700; letter-spacing:.2px; }
-
-    /* Your uploaded logo */
-    .logo-img{
-      width:40px; height:40px; border-radius:10px;
-      object-fit:contain; background:#fff; padding:5px;
-      box-shadow:0 4px 18px rgba(8,156,164,.45);
+    /* ===== Header (stacked logo ABOVE title) ===== */
+    .header{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:16px; 
+      margin-bottom:18px;
     }
-    .brand:hover .logo-img{ transform:translateY(-1px); transition:transform .12s ease; }
+    .brand{
+      display:grid; align-items:center; grid-template-columns:1fr; justify-items:start;
+      gap:10px;
+    }
+    /* Bigger logo */
+    .logo-img{
+      width:min(96px, 26vw);
+      height:min(96px, 26vw);
+      border-radius:16px;              /* rounded square */
+      object-fit:contain;
+      background:#fff;                 /* clean on dark */
+      padding:10px;
+      box-shadow:0 8px 26px rgba(8,156,164,.35);
+    }
+    .brand:hover .logo-img{ transform:translateY(-2px); transition:transform .12s ease; }
 
-    .title{ font-size:clamp(18px,2.4vw,24px) }
-    .muted{ color:var(--muted); font-weight:500 }
+    .title{ font-size:clamp(22px, 3vw, 28px); font-weight:800; }
+    .muted{ color:var(--muted); font-weight:500; margin-top:-6px }
 
-    /* Card */
+    /* Theme toggle */
+    .toggle{ display:inline-flex; align-items:center; gap:10px; color:var(--muted); user-select:none; cursor:pointer; }
+    .switch{ width:52px; height:30px; border-radius:999px; position:relative; background:#ffffff22; border:1px solid color-mix(in srgb, var(--text) 20%, transparent) }
+    .switch::after{ content:""; width:24px; height:24px; border-radius:50%; position:absolute; top:3px; left:3px; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,.2); transition:left .2s ease }
+    [data-theme="light"] .switch::after{ left:25px }
+
+    /* ===== Card ===== */
     .card{
       position:relative; border-radius:18px; overflow:hidden; isolation:isolate;
       background:linear-gradient(180deg, color-mix(in srgb, var(--card) 90%, transparent), var(--card));
@@ -68,15 +84,16 @@
       display:flex; align-items:center; justify-content:space-between; gap:10px;
       padding:14px clamp(14px,2.2vw,20px);
       border-bottom:1px solid color-mix(in srgb, var(--text) 10%, transparent);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 28%, transparent), transparent 60%);
     }
-    .card-title{ font-size:clamp(16px,2vw,20px); font-weight:700; }
+    .card-title{ font-size:clamp(16px,2vw,20px); font-weight:800; }
 
     /* Actions */
     .actions{ display:flex; flex-wrap:wrap; gap:8px; }
     .btn{
       appearance:none; border:none; cursor:pointer; text-decoration:none;
-      padding:10px 12px; border-radius:12px; font-weight:700;
-      color:#0b1020; background:linear-gradient(180deg,#fff,#ebf9fb);
+      padding:10px 12px; border-radius:12px; font-weight:800;
+      color:#0b1020; background: linear-gradient(180deg,#fff,#ebf9fb);
       box-shadow:0 6px 20px rgba(16,22,36,.15);
       transition:transform .12s ease, box-shadow .12s ease;
       display:inline-flex; align-items:center; gap:8px;
@@ -90,16 +107,14 @@
     .btn.ghost{ background:transparent; color:var(--text); border:1px solid color-mix(in srgb, var(--text) 16%, transparent) }
     .chip{ font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid color-mix(in srgb, var(--text) 16%, transparent); color:var(--muted) }
 
-    /* Viewer (height will be set by JS to fit one screen) */
+    /* ===== Viewer =====
+       Height is set dynamically by JS so the whole PDF page fits one screen.
+    */
     .viewer{ position:relative; height:70vh; background:#0002; }
     .viewer iframe{ width:100%; height:100%; border:0; display:block; background:#1b2236; }
 
     /* Loading overlay */
-    .loading{
-      position:absolute; inset:0; display:grid; place-items:center;
-      background:linear-gradient(180deg, #0b102015, transparent);
-      transition:opacity .25s ease; z-index:2;
-    }
+    .loading{ position:absolute; inset:0; display:grid; place-items:center; background:linear-gradient(180deg, #0b102015, transparent); transition:opacity .25s ease; z-index:2; }
     .spinner{
       width:56px; height:56px; border-radius:50%;
       background:conic-gradient(from 0deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #9ff2f7), var(--accent));
@@ -116,13 +131,8 @@
       color:var(--muted); font-size:13px;
     }
 
-    .toggle{ display:inline-flex; align-items:center; gap:10px; color:var(--muted); user-select:none; cursor:pointer; }
-    .switch{ width:48px; height:28px; border-radius:999px; position:relative; background:#ffffff22; border:1px solid color-mix(in srgb, var(--text) 20%, transparent) }
-    .switch::after{ content:""; width:22px; height:22px; border-radius:50%; position:absolute; top:2px; left:2px; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,.2); transition:left .2s ease }
-    [data-theme="light"] .switch::after{ left:24px }
-
     @media (max-width:720px){
-      .header{ flex-direction:column; align-items:flex-start }
+      .header{ flex-direction:row; align-items:flex-start; gap:12px }
       .actions{ width:100% }
       .foot{ flex-direction:column; align-items:flex-start; gap:6px }
     }
@@ -133,14 +143,12 @@
 </head>
 <body>
   <div class="wrap">
-    <!-- Header -->
+    <!-- ===== Header (logo above title) ===== -->
     <header class="header" id="topHeader">
       <div class="brand">
-        <img src="./BL_Technolas.png" class="logo-img" alt="B&L Technolas logo">
-        <div>
-          <div class="title">TPV B&amp;L Scan me</div>
-          <div class="muted">Fast • Clean • No watermark</div>
-        </div>
+        <img src="./BL_Technolas.png" alt="Bausch & Lomb Technolas logo" class="logo-img" />
+        <div class="title">TPV B&amp;L Scan me</div>
+        <div class="muted">Fast • Clean • No watermark</div>
       </div>
 
       <label class="toggle" title="Toggle theme">
@@ -149,7 +157,7 @@
       </label>
     </header>
 
-    <!-- Card -->
+    <!-- ===== Card ===== -->
     <section class="card" id="card">
       <div class="card-head" id="cardHead">
         <div class="card-title">TPV Munich — PDF</div>
@@ -158,6 +166,8 @@
           <a id="downloadBtn" href="./TPV%20Munich.pdf" download class="btn">Download</a>
           <button class="btn" id="copyBtn">Copy link</button>
           <button class="btn ghost" id="fullscreenBtn">Full screen</button>
+          <button class="btn ghost" id="fitPageBtn">Fit page</button>
+          <button class="btn ghost" id="fitWidthBtn">Fit width</button>
           <span class="chip" id="statusChip">Loading…</span>
         </div>
       </div>
@@ -176,7 +186,9 @@
   </div>
 
   <script>
-    /* ===== CONFIG ===== */
+    /* =========================
+       CONFIG
+       ========================= */
     const pdfUrl = './TPV%20Munich.pdf';   // keep %20 for the space
     const frame = document.getElementById('pdfFrame');
     const loading = document.getElementById('loading');
@@ -187,21 +199,23 @@
     const themeSwitch = document.getElementById('themeSwitch');
     const viewer = document.getElementById('viewer');
     const downloadBtn = document.getElementById('downloadBtn');
+    const fitPageBtn = document.getElementById('fitPageBtn');
+    const fitWidthBtn = document.getElementById('fitWidthBtn');
 
-    /* ===== Load PDF =====
-       page-fit shows the whole page in the available area (fits one screen)
-       If you prefer width: use zoom=page-width
-    */
-    const urlWithParams = `${pdfUrl}#page=1&zoom=page-fit&toolbar=1&statusbar=0&navpanes=0`;
-    frame.src = urlWithParams;
-    downloadBtn.href = pdfUrl;
+    /* =========================
+       Load PDF — default: Fit page (whole page visible)
+       ========================= */
+    function loadWithZoom(mode){
+      const hash = mode === 'width' ? 'zoom=page-width' : 'zoom=page-fit';
+      frame.src = `${pdfUrl}#page=1&${hash}&toolbar=1&statusbar=0&navpanes=0`;
+      statusChip.textContent = (mode === 'width') ? 'Fit width' : 'Fit page';
+    }
+    loadWithZoom('page'); // initial
 
     let loaded = false;
     frame.addEventListener('load', () => {
       loaded = true;
-      loading.style.opacity = '0';
-      setTimeout(() => loading.style.display = 'none', 260);
-      statusChip.textContent = 'Ready';
+      loading.style.opacity =m()
     });
 
     // If not loaded in ~6s (some iOS cases), remove loader and hint "Open externally"
@@ -213,20 +227,26 @@
       }
     }, 6000);
 
-    /* ===== Fit viewer height to one screen ===== */
+    /* =========================
+       Fit viewer height to ONE screen
+       ========================= */
     function sizeViewer(){
       const headerH = document.getElementById('topHeader').offsetHeight || 0;
       const headH   = document.getElementById('cardHead').offsetHeight || 0;
       const footH   = document.getElementById('cardFoot').offsetHeight || 0;
-      const outerMargins = 40; // wrap margins/paddings approx
-      const h = Math.max(320, window.innerHeight - headerH - headH - footH - outerMargins);
+      // margins/padding estimate for the outer container
+      const wrapMargins = 32;
+      const h = Math.max(320, window.innerHeight - headerH - headH - footH - wrapMargins);
       viewer.style.height = h + 'px';
     }
     sizeViewer();
-    window.addEventListener('resize', sizeViewer);
+    addEventListener('resize', sizeViewer);
 
-    /* ===== Actions ===== */
+    /* =========================
+       Actions
+       ========================= */
     openBtn.addEventListener('click', () => window.open(pdfUrl, '_blank', 'noopener,noreferrer'));
+    downloadBtn.href = pdfUrl;
 
     copyBtn.addEventListener('click', async () => {
       try{
@@ -250,9 +270,14 @@
       }catch{ toast('Fullscreen not supported'); }
     });
 
-    /* ===== Theme (auto + toggle + persist) ===== */
+    fitPageBtn.addEventListener('click', () => loadWithZoom('page'));
+    fitWidthBtn.addEventListener('click', () => loadWithZoom('width'));
+
+    /* =========================
+       Theme (auto + toggle + persist)
+       ========================= */
     const savedTheme = localStorage.getItem('theme');
-    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    const prefersLight = matchMedia('(prefers-color-scheme: light)').matches;
     const initial = savedTheme || (prefersLight ? 'light' : 'dark');
     document.documentElement.setAttribute('data-theme', initial);
     themeSwitch.setAttribute('aria-checked', initial === 'light');
@@ -263,11 +288,14 @@
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('theme', next);
       themeSwitch.setAttribute('aria-checked', next === 'light');
+      sizeViewer(); // recalc in case header height changes slightly
     }
     themeSwitch.addEventListener('click', toggleTheme);
     themeSwitch.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); toggleTheme(); }});
 
-    /* ===== Tiny toast ===== */
+    /* =========================
+       Tiny toast
+       ========================= */
     function toast(msg){
       const t = document.createElement('div');
       t.textContent = msg;
@@ -275,14 +303,14 @@
         position:'fixed', left:'50%', bottom:'22px', transform:'translateX(-50%)',
         background:'linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #32d6df))',
         color:'#fff', padding:'10px 14px', borderRadius:'12px', boxShadow:'0 8px 24px rgba(0,0,0,.28)',
-        zIndex:9999, fontWeight:'700', transition:'opacity .2s ease'
+        zIndex:9999, fontWeight:'800', transition:'opacity .2s ease'
       });
       document.body.appendChild(t);
       setTimeout(()=> t.style.opacity='0', 1400);
       setTimeout(()=> t.remove(), 1800);
     }
 
-    /* ===== Shortcuts ===== */
+    /* Shortcuts */
     document.addEventListener('keydown', (e)=>{
       if(e.key.toLowerCase() === 'o') openBtn.click();      // O = Open
       if(e.key.toLowerCase() === 'f') fsBtn.click();        // F = Full screen
