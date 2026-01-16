@@ -132,16 +132,14 @@
 
   <footer>Local-only QR generator • Ideal for Storyline Web Object and intranet use.</footer>
 
-  <!-- ========== Load the local QR library ========== -->
-  <!-- Option A (absolute path - safest for project sites): -->
+  <!-- ========== Load the local QR library (pick ONE of the two lines) ========== -->
+  <!-- Option A (ABSOLUTE path — safest for GitHub Pages project sites): -->
   ./SeeLyra-Acty/qr-generator/js/qrcode.min.js"></script>
-
-  <!-- Option B (relative path - also fine from qr-generator/index.html): -->
-  <!-- <script src="./js/qrcode.min.js"></script> -->
+  <!-- Option B (RELATIVE path — also fine from qr-generator/index.html): -->
+  <!-- ./js/qrcode.min.js</script> -->
 
   <!-- ========== Your app code (must be AFTER the library) ========== -->
   <script>
-    // Map dropdown to QRCode.CorrectLevel
     const EC_MAP = { L: QRCode.CorrectLevel.L, M: QRCode.CorrectLevel.M, Q: QRCode.CorrectLevel.Q, H: QRCode.CorrectLevel.H };
 
     const elText = document.getElementById('qrText');
