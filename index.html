@@ -1,31 +1,27 @@
-
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-    <head>
+<head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SeeLyra — PDF Viewer</title>
+  <title>PDF Viewer</title>
   <meta name="color-scheme" content="light dark" />
-  <style>
 
-    /* ==============================
-       Theme tokens (same accent for all themes)
-       ============================== */
+  <style>
     :root{
-      --accent:#089ca4;                /* your brand color everywhere */
+      --accent:#089ca4;
       --text:#e8ecf4;
       --muted:#b7c1d6;
-      --bg:#0b1020;                    /* dark background */
+      --bg:#0b1020;
       --bg-2:#0f152e;
       --card:rgba(255,255,255,.08);
       --ring:0 0 0 2px rgba(8,156,164,.45);
       --shadow-lg:0 10px 30px rgba(0,0,0,.35);
     }
-    /* Light theme keeps the SAME accent */
+
     [data-theme="light"]{
       --text:#101624;
       --muted:#3b455a;
-      --bg:#f5f7fb;                    /* light background */
+      --bg:#f5f7fb;
       --bg-2:#edf1f8;
       --card:rgba(255,255,255,.7);
       --shadow-lg:0 10px 30px rgba(16,22,36,.12);
@@ -33,303 +29,183 @@
 
     html,body{height:100%}
     body{
-      margin:0; color:var(--text);
+      margin:0;
+      color:var(--text);
       background:
         radial-gradient(1200px 600px at 10% -10%, rgba(8,156,164,.28), transparent 55%),
         radial-gradient(1000px 600px at 120% 10%, rgba(8,156,164,.22), transparent 55%),
         linear-gradient(160deg, var(--bg), var(--bg-2));
-      font:15px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
-      overflow-y: overlay;
+      font:15px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Arial;
     }
 
-    .wrap{ max-width:1100px; margin:clamp(16px,3.5vw,48px) auto; padding:0 16px; }
+    .wrap{max-width:1100px;margin:32px auto;padding:0 16px}
 
-    /* ===== Header (logo ABOVE title) ===== */
+    /* ===== Header ===== */
     .header{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:16px; 
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
       margin-bottom:18px;
     }
-    .brand{ display:grid; gap:10px; justify-items:start }
 
-    /* Show logo exactly as the file (no white tab/box) */
     .logo-img{
       width:min(420px, 120vw);
-      height:auto;            /* preserve original aspect ratio */
+      height:auto;
       display:block;
-      background:transparent; /* no white background */
-      padding:0;              /* no extra padding */
-      border-radius:0;        /* no rounding */
-      box-shadow:none;        /* no glow */
-      image-rendering:auto;
+      background:transparent;
     }
-    .brand:hover .logo-img{ transform:translateY(-2px); transition:transform .12s ease; }
 
-    .title{ font-size:clamp(22px, 3.2vw, 30px); font-weight:800; margin:0; }
+    /* ===== Theme toggle ===== */
+    .toggle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:var(--muted);
+      cursor:pointer;
+      user-select:none;
+    }
 
-    /* Theme toggle */
-    .toggle{ display:inline-flex; align-items:center; gap:10px; color:var(--muted); user-select:none; cursor:pointer; }
-    .switch{ width:52px; height:30px; border-radius:999px; position:relative; background:#ffffff22; border:1px solid rgba(255,255,255,.15) }
-    .switch::after{ content:""; width:24px; height:24px; border-radius:50%; position:absolute; top:3px; left:3px; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,.2); transition:left .2s ease }
-    [data-theme="light"] .switch{ border-color: rgba(16,22,36,.18) }
-    [data-theme="light"] .switch::after{ left:25px }
+    .switch{
+      width:52px;
+      height:30px;
+      border-radius:999px;
+      position:relative;
+      background:#ffffff22;
+      border:1px solid rgba(255,255,255,.15);
+    }
 
-    /* ===== Card / Toolbar ===== */
+    .switch::after{
+      content:"";
+      width:24px;
+      height:24px;
+      border-radius:50%;
+      position:absolute;
+      top:3px;
+      left:3px;
+      background:#fff;
+      transition:left .2s ease;
+    }
+
+    [data-theme="light"] .switch::after{left:25px}
+
+    /* ===== Card ===== */
     .card{
-      position:relative; border-radius:18px; overflow:hidden; isolation:isolate;
-      background:linear-gradient(180deg, color-mix(in srgb, var(--card) 90%, transparent), var(--card));
+      border-radius:18px;
+      overflow:hidden;
+      background:linear-gradient(180deg, var(--card), var(--card));
       box-shadow:var(--shadow-lg);
       border:1px solid rgba(255,255,255,.12);
-      backdrop-filter:blur(8px);
     }
-    [data-theme="light"] .card{ border-color: rgba(16,22,36,.12) }
 
     .card-head{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding:14px clamp(14px,2.2vw,20px);
+      display:flex;
+      justify-content:space-between;
+      padding:14px 20px;
       border-bottom:1px solid rgba(255,255,255,.12);
-      background: linear-gradient(135deg, rgba(8,156,164,.25), transparent 60%);
     }
-    [data-theme="light"] .card-head{ border-color: rgba(16,22,36,.12) }
 
-    .card-title{ font-size:clamp(16px,2vw,20px); font-weight:800; }
+    .card-title{
+      font-weight:800;
+      font-size:18px;
+    }
 
-    .actions{ display:flex; flex-wrap:wrap; gap:8px; }
+    .actions{display:flex;flex-wrap:wrap;gap:8px}
+
     .btn{
-      appearance:none; border:none; cursor:pointer; text-decoration:none;
-      padding:10px 12px; border-radius:12px; font-weight:800;
-      color:#0b1020; background: linear-gradient(180deg,#fff,#ebf9fb);
-      box-shadow:0 6px 20px rgba(16,22,36,.15);
-      transition:transform .12s ease, box-shadow .12s ease;
-      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:none;
+      font-weight:800;
+      cursor:pointer;
+      background:#fff;
+      color:#0b1020;
     }
-    .btn:hover{ transform:translateY(-2px); box-shadow:0 10px 28px rgba(16,22,36,.22) }
-    .btn:active{ transform:translateY(0) scale(.98) }
+
     .btn.accent{
-      color:#fff; background:linear-gradient(135deg, var(--accent), #16c4cf);
-      box-shadow:0 8px 24px rgba(8,156,164,.45);
+      background:linear-gradient(135deg, var(--accent), #16c4cf);
+      color:#fff;
     }
-    .btn.ghost{ background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.16) }
-    [data-theme="light"] .btn.ghost{ border-color: rgba(16,22,36,.16) }
-    .chip{ font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.16); color:var(--muted) }
-    [data-theme="light"] .chip{ border-color: rgba(16,22,36,.16) }
 
-    /* ===== Viewer =====
-       Height is set in JS to fit ONE page on screen.
-    */
-    .viewer{ position:relative; background:#0002; height:70vh; }
-    .viewer iframe{ width:100%; height:100%; border:0; display:block; background:#1b2236; }
-
-    /* Loading overlay */
-    .loading{ position:absolute; inset:0; display:grid; place-items:center; background:linear-gradient(180deg, #0b102015, transparent); transition:opacity .25s ease; z-index:2; }
-    .spinner{
-      width:56px; height:56px; border-radius:50%;
-      background:conic-gradient(from 0deg, var(--accent), #9ff2f7, var(--accent));
-      -webkit-mask:radial-gradient(farthest-side, transparent 62%, #000 63%);
-              mask:radial-gradient(farthest-side, transparent 62%, #000 63%);
-      animation:spin 1s linear infinite; filter:saturate(130%) drop-shadow(0 6px 20px rgba(0,0,0,.35));
+    .btn.ghost{
+      background:transparent;
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.2);
     }
-    @keyframes spin{ to{ transform:rotate(1turn) } }
+
+    .viewer{
+      height:70vh;
+      background:#0002;
+    }
+
+    .viewer iframe{
+      width:100%;
+      height:100%;
+      border:0;
+    }
 
     .foot{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding:10px clamp(14px, 2.2vw, 20px);
+      padding:10px 20px;
+      font-size:13px;
+      color:var(--muted);
       border-top:1px solid rgba(255,255,255,.12);
-      color:var(--muted); font-size:13px;
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:8px;
     }
-    [data-theme="light"] .foot{ border-color: rgba(16,22,36,.12) }
-
-    @media (max-width:720px){
-      .header{ flex-direction:row; align-items:flex-start; gap:12px }
-      .actions{ width:100% }
-      .foot{ flex-direction:column; align-items:flex-start; gap:6px }
-    }
-
-    .btn:focus-visible, .switch:focus-visible { outline:none; box-shadow: var(--ring) }
-    a{ color: #0fb9c3 }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <!-- ===== Header (logo above title) ===== -->
-    <header class="header" id="topHeader">
-      <div class="brand">
-        <!-- Real image tag so the path doesn’t render as text -->
-        <img class="logo-img" src="BL_Technolas.png" alt="Bausch + Lomb | Technolas logo" loading="eager">
-        <div class="title">SeeLyra</div>
+<div class="wrap">
+
+  <!-- Header -->
+  <header class="header" id="topHeader">
+    <img class="logo-img" src="BL_Technolas.png" alt="Bausch + Lomb | Technolas logo">
+
+    <label class="toggle">
+      <span>Theme</span>
+      <div class="switch" id="themeSwitch"></div>
+    </label>
+  </header>
+
+  <!-- PDF Card -->
+  <section class="card">
+    <div class="card-head">
+      <div class="card-title">Acty Guide Support — PDF</div>
+
+      <div class="actions">
+        <button class="btn accent" onclick="window.open('TPV%20Munich.pdf')">Open</button>
+        <a class="btn" href="TPV%20Munich.pdf" download>Download</a>
+        <button class="btn ghost" onclick="document.documentElement.requestFullscreen()">Full screen</button>
       </div>
+    </div>
 
-      <label class="toggle" title="Toggle theme">
-        <span>Theme</span>
-        <div class="switch" id="themeSwitch" tabindex="0" role="switch" aria-checked="false"></div>
-      </label>
-    </header>
+    <div class="viewer">
+      <iframe src="TPV%20Munich.pdf#page=1&zoom=page-fit"></iframe>
+    </div>
 
-    <!-- ===== Card ===== -->
-    <section class="card" id="card">
-      <div class="card-head" id="cardHead">
-        <div class="card-title">SeeLyra Acty Guide Support — PDF</div>
-        <div class="actions">
-          <button class="btn accent" id="openBtn">Open</button>
-          <a id="downloadBtn" href="TPV%20Munich.pdf" download class="btn">Download</a>
-          <button class="btn" id="copyBtn">Copy link</button>
-          <button class="btn ghost" id="fullscreenBtn">Full screen</button>
-          <button class="btn ghost" id="fitPageBtn">Fit page</button>
-          <button class="btn ghost" id="fitWidthBtn">Fit width</button>
-          <span class="chip" id="statusChip">Loading…</span>
-        </div>
-      </div>
+    <div class="foot">
+      <div>Tip: If the PDF doesn’t load on mobile, tap <strong>Open</strong>.</div>
+      <div>Powered by Technolas · Bausch + Lomb</div>
+    </div>
+  </section>
 
-      <div class="viewer" id="viewer">
-        <div class="loading" id="loading"><div class="spinner" aria-hidden="true"></div></div>
-        <!-- Native browser PDF viewer -->
-        <iframe id="pdfFrame" title="PDF document"></iframe>
-      </div>
+</div>
 
-      <div class="foot" id="cardFoot">
-        <div>Tip: If the PDF doesn’t appear on some phones, tap <strong>Open</strong>.</div>
-        <div>Powered By Technolas Bausch + Lomb</div>
-      </div>
-    </section>
-  </div>
+<script>
+  const switchBtn = document.getElementById('themeSwitch');
 
-  <script>
-    /* =========================
-       CONFIG
-       ========================= */
-    const pdfUrl = './TPV%20Munich.pdf';   // keep %20 for the space
-    const frame = document.getElementById('pdfFrame');
-    const loading = document.getElementById('loading');
-    const statusChip = document.getElementById('statusChip');
-    const openBtn = document.getElementById('openBtn');
-    const copyBtn = document.getElementById('copyBtn');
-    const fsBtn = document.getElementById('fullscreenBtn');
-    const themeSwitch = document.getElementById('themeSwitch');
-    const viewer = document.getElementById('viewer');
-    const fitPageBtn = document.getElementById('fitPageBtn');
-    const fitWidthBtn = document.getElementById('fitWidthBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
+  switchBtn.onclick = () => {
+    const html = document.documentElement;
+    const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  };
 
-    /* =========================
-       Load PDF once (no freeze) — default: Fit page
-       ========================= */
-    function setZoom(mode){   // 'page' or 'width'
-      const hash = (mode === 'width') ? 'zoom=page-width' : 'zoom=page-fit';
-      frame.src = `${pdfUrl}#page=1&${hash}&toolbar=1&statusbar=0&navpanes=0`;
-      statusChip.textContent = (mode === 'width') ? 'Fit width' : 'Fit page';
-    }
-    setZoom('page'); // initial
-    downloadBtn.href = pdfUrl;
+  const saved = localStorage.getItem('theme');
+  if(saved) document.documentElement.setAttribute('data-theme', saved);
+</script>
 
-    let loaded = false;
-    frame.addEventListener('load', () => {
-      loaded = true;
-      loading.style.opacity = '0';
-      setTimeout(() => loading.style.display = 'none', 260);
-    });
-
-    // If not loaded in ~6s (some iOS cases), remove loader and hint
-    setTimeout(() => {
-      if (!loaded) {
-        statusChip.textContent = 'Open externally';
-        loading.style.opacity = '0';
-        setTimeout(() => loading.style.display = 'none', 260);
-      }
-    }, 6000);
-
-    /* =========================
-       Compute viewer height to fit ONE screen
-       (debounced to avoid jank)
-       ========================= */
-    function computeHeight(){
-      const headerH = document.getElementById('topHeader').offsetHeight || 0;
-      const headH   = document.getElementById('cardHead').offsetHeight || 0;
-      const footH   = document.getElementById('cardFoot').offsetHeight || 0;
-      const wrapMargins = 32; // approximate outer spacings
-      const h = Math.max(340, window.innerHeight - headerH - headH - footH - wrapMargins);
-      viewer.style.height = h + 'px';
-    }
-    let rAF, t;
-    function sizeViewerDebounced(){
-      if (rAF) cancelAnimationFrame(rAF);
-      if (t) clearTimeout(t);
-      t = setTimeout(()=> { rAF = requestAnimationFrame(computeHeight); }, 120);
-    }
-    // initial + on resize + on theme change
-    computeHeight();
-    addEventListener('resize', sizeViewerDebounced);
-
-    /* =========================
-       Actions
-       ========================= */
-    openBtn.addEventListener('click', () => window.open(pdfUrl, '_blank', 'noopener,noreferrer'));
-    fitPageBtn.addEventListener('click', () => setZoom('page'));
-    fitWidthBtn.addEventListener('click', () => setZoom('width'));
-
-    copyBtn.addEventListener('click', async () => {
-      try{
-        const absolute = new URL(pdfUrl, location.href).href;
-        await navigator.clipboard.writeText(absolute);
-        toast('Link copied');
-      }catch{
-        toast('Copy failed — long-press Open and copy link');
-      }
-    });
-
-    fsBtn.addEventListener('click', async () => {
-      try{
-        if (!document.fullscreenElement) {
-          await (viewer.requestFullscreen?.() || viewer.webkitRequestFullscreen?.());
-          fsBtn.textContent = 'Exit full screen';
-        } else {
-          await (document.exitFullscreen?.() || document.webkitExitFullscreen?.());
-          fsBtn.textContent = 'Full screen';
-        }
-      }catch{ toast('Fullscreen not supported'); }
-    });
-
-    /* =========================
-       Theme (auto + toggle + persist)
-       ========================= */
-    const savedTheme = localStorage.getItem('theme');
-    const prefersLight = matchMedia('(prefers-color-scheme: light)').matches;
-    const initial = savedTheme || (prefersLight ? 'light' : 'dark');
-    document.documentElement.setAttribute('data-theme', initial);
-    themeSwitch.setAttribute('aria-checked', initial === 'light');
-
-    function toggleTheme(){
-      const cur = document.documentElement.getAttribute('data-theme');
-      const next = cur === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-      themeSwitch.setAttribute('aria-checked', next === 'light');
-      sizeViewerDebounced();
-    }
-    themeSwitch.addEventListener('click', toggleTheme);
-    themeSwitch.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); toggleTheme(); }});
-
-    /* =========================
-       Tiny toast
-       ========================= */
-    function toast(msg){
-      const t = document.createElement('div');
-      t.textContent = msg;
-      Object.assign(t.style,{
-        position:'fixed', left:'50%', bottom:'22px', transform:'translateX(-50%)',
-        background:'linear-gradient(135deg, var(--accent), #16c4cf)',
-        color:'#fff', padding:'10px 14px', borderRadius:'12px', boxShadow:'0 8px 24px rgba(0,0,0,.28)',
-        zIndex:9999, fontWeight:'800', transition:'opacity .2s ease'
-      });
-      document.body.appendChild(t);
-      setTimeout(()=> t.style.opacity='0', 1400);
-      setTimeout(()=> t.remove(), 1800);
-    }
-
-    /* Shortcuts */
-    document.addEventListener('keydown', (e)=>{
-      if(e.key.toLowerCase() === 'o') openBtn.click();      // O = Open
-      if(e.key.toLowerCase() === 'f') fsBtn.click();        // F = Full screen
-      if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='c') copyBtn.click(); // Ctrl/Cmd + C
-    });
-  </script>
 </body>
 </html>
