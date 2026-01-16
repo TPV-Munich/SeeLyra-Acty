@@ -1,65 +1,189 @@
 
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="teal">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PDF Viewer</title>
+
   <style>
+    /* ===================== THEME SYSTEM ===================== */
     :root{
-      --accent:#089ca4;
+      --accent:#089ca4;        /* teal by default */
+      --accent-2:#16c4cf;
       --bg:#0b1020;
       --bg-2:#0f152e;
       --card:rgba(255,255,255,.08);
       --text:#e8ecf4;
+      --muted:#b7c1d6;
       --border:rgba(255,255,255,.18);
       --shadow-lg:0 10px 30px rgba(0,0,0,.35);
     }
+    /* Teal (DEFAULT) — gradient around #089ca4 */
+    html[data-theme="teal"]{
+      --accent:#089ca4;
+      --accent-2:#15b8c1;
+      --bg:#0b1020;
+      --bg-2:#0f152e;
+      --card:rgba(255,255,255,.08);
+      --text:#e8ecf4;
+      --muted:#b7c1d6;
+      --border:rgba(255,255,255,.18);
+    }
+    /* Deep (indigo/blue) */
+    html[data-theme="deep"]{
+      --accent:#4f72ff;
+      --accent-2:#71a1ff;
+      --bg:#0b0f1e;
+      --bg-2:#0e1632;
+      --card:rgba(255,255,255,.10);
+      --text:#e9eeff;
+      --muted:#bac6ea;
+      --border:rgba(255,255,255,.18);
+    }
+    /* Light */
+    html[data-theme="light"]{
+      --accent:#089ca4;
+      --accent-2:#16c4cf;
+      --bg:#f6f8fb;
+      --bg-2:#ffffff;
+      --card:rgba(0,0,0,.04);
+      --text:#0f182a;
+      --muted:#4b5a78;
+      --border:rgba(0,0,0,.12);
+    }
+
+    /* ===================== BASE LAYOUT ===================== */
     html,body{height:100%}
     body{
       margin:0;
       color:var(--text);
       background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(8,156,164,.28), transparent 55%),
-        radial-gradient(1000px 600px at 120% 10%, rgba(8,156,164,.22), transparent 55%),
+        radial-gradient(1200px 600px at 10% -10%, color-mix(in oklab, var(--accent) 28%, transparent), transparent 55%),
+        radial-gradient(1000px 600px at 120% 10%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 55%),
         linear-gradient(160deg, var(--bg), var(--bg-2));
       font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Arial;
     }
     .wrap{max-width:1100px;margin:32px auto;padding:0 16px}
-    .header{display:flex;justify-content:space-between;margin-bottom:18px;}
-    .logo-img{width:420px;max-width:100%;height:auto;}
-    .card{border-radius:18px;overflow:hidden;background:linear-gradient(180deg,var(--card),var(--card));box-shadow:var(--shadow-lg);border:1px solid var(--border);}
-    .card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 20px;border-bottom:1px solid var(--border);}
-    .card-title{font-size:18px;font-weight:800;}
-    .actions{display:flex;flex-wrap:wrap;gap:8px;}
-    .btn{appearance:none;border:none;cursor:pointer;padding:10px 14px;border-radius:12px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--accent),#16c4cf);box-shadow:0 6px 18px rgba(8,156,164,.45);display:inline-flex;align-items:center;gap:6px;}
+
+    /* ===== Header ===== */
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:18px;
+    }
+    .logo-img{
+      width:420px;max-width:100%;height:auto;display:block;
+    }
+
+    /* ===== Card ===== */
+    .card{
+      border-radius:18px;
+      overflow:hidden;
+      background:linear-gradient(180deg,var(--card),var(--card));
+      box-shadow:var(--shadow-lg);
+      border:1px solid var(--border);
+      backdrop-filter:saturate(120%) blur(6px);
+    }
+    .card-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:14px 20px;
+      border-bottom:1px solid var(--border);
+    }
+    .card-title{
+      font-size:18px;
+      font-weight:800;
+    }
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    /* ===== Buttons ===== */
+    .btn{
+      appearance:none;border:none;cursor:pointer;
+      padding:10px 14px;border-radius:12px;font-weight:800;
+      color:#fff;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      box-shadow:0 6px 18px color-mix(in oklab, var(--accent) 45%, transparent);
+      display:inline-flex;align-items:center;gap:6px;
+      transition:transform .08s ease, filter .15s ease;
+    }
     .btn:active{transform:scale(.97)}
-    .viewer{height:70vh;background:#000;}
-    .viewer iframe{width:100%;height:100%;border:0;display:block;}
-    .foot{padding:10px 20px;border-top:1px solid var(--border);font-size:13px;color:#b7c1d6;display:flex;justify-content:space-between;gap:10px;}
+    .btn.secondary{
+      color:var(--text);
+      background:transparent;
+      border:1px solid var(--border);
+      box-shadow:none;
+    }
+
+    /* ===== Viewer ===== */
+    .viewer{
+      /* Use a tall area so “page-width” has room and doesn’t feel zoomed-in */
+      height:72vh; /* adjust if you want more or less */
+      background:#000;
+    }
+    .viewer iframe{
+      width:100%;
+      height:100%;
+      border:0;
+      display:block;
+      background:#1a1a1a;
+    }
+
+    /* ===== Footer ===== */
+    .foot{
+      padding:10px 20px;
+      border-top:1px solid var(--border);
+      font-size:13px;
+      color:var(--muted);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+    }
+
+    /* Small screens */
+    @media (max-width:640px){
+      .viewer{height: 68vh;}
+      .card-head{gap:6px}
+      .actions{gap:6px}
+      .btn{padding:9px 12px}
+    }
   </style>
 </head>
+
 <body>
 <div class="wrap">
 
+  <!-- Header -->
   <header class="header">
     <img class="logo-img" src="BL_Technolas.png" alt="Bausch + Lomb | Technolas logo">
+    <button class="btn secondary" id="themeBtn" title="Change theme">Theme</button>
   </header>
 
+  <!-- Card -->
   <section class="card">
     <div class="card-head">
-      <div class="card-title">SeeLyra Acty Guide Support - PDF</div>
+      <div class="card-title">SeeLyra Acty Guide Support — PDF</div>
       <div class="actions">
         <button class="btn" id="openBtn">Open</button>
         <a class="btn" id="downloadBtn" download>Download</a>
         <button class="btn" id="copyBtn">Copy link</button>
         <button class="btn" id="zoomOutBtn">−</button>
         <button class="btn" id="zoomInBtn">+</button>
+        <button class="btn" id="fitBtn" title="Fit page width">Fit</button>
         <button class="btn" id="fullscreenBtn">Full screen</button>
       </div>
     </div>
 
     <div class="viewer" id="viewer">
+      <!-- TIP: some browsers ignore PDF params; we still use them for best-effort fit -->
       <iframe id="pdfFrame" allow="fullscreen"></iframe>
     </div>
 
@@ -67,24 +191,34 @@
       <div>Tip: If the PDF doesn’t appear on some phones, tap <strong>Open</strong>.</div>
       <div>Powered By Technolas Bausch + Lomb</div>
     </div>
+
   </section>
 
 </div>
 
 <script>
-  const pdfUrl = './TPV%20Munich.pdf';
-  const frame = document.getElementById('pdfFrame');
-  const viewer = document.getElementById('viewer');
-  const fsBtn = document.getElementById('fullscreenBtn');
+  /* ================ CONFIG ================ */
+  const pdfUrl = './TPV%20Munich.pdf'; // make sure the file name & path match exactly
 
-  let zoom = 100;
+  const frame   = document.getElementById('pdfFrame');
+  const viewer  = document.getElementById('viewer');
+  const fsBtn   = document.getElementById('fullscreenBtn');
+  const fitBtn  = document.getElementById('fitBtn');
+  const themeBtn= document.getElementById('themeBtn');
+
+  /* ================ PDF ZOOM BEHAVIOR ================ */
+  // Use "page-width" on load so it fills horizontally without showing just half a page.
+  // This avoids the “very zoomed / half page” effect you saw.
+  let zoomMode = 'page-width'; // can be 'page-fit' or a number like 120
 
   function loadPdf(){
-    frame.src = `${pdfUrl}#zoom=${zoom}`;
+    frame.src = `${pdfUrl}#zoom=${zoomMode}`;
   }
 
+  // Initial load
   loadPdf();
 
+  // Basic controls
   document.getElementById('openBtn').onclick = () => window.open(pdfUrl,'_blank');
   document.getElementById('downloadBtn').href = pdfUrl;
 
@@ -92,32 +226,65 @@
     await navigator.clipboard.writeText(new URL(pdfUrl, location.href));
   };
 
+  // Numeric zoom (best-effort; some mobile viewers may ignore)
   document.getElementById('zoomInBtn').onclick = () => {
-    zoom = Math.min(200, zoom + 10);
+    if (typeof zoomMode === 'string') zoomMode = 100;
+    zoomMode = Math.min(250, (Number(zoomMode) || 100) + 10);
     loadPdf();
   };
-
   document.getElementById('zoomOutBtn').onclick = () => {
-    zoom = Math.max(50, zoom - 10);
+    if (typeof zoomMode === 'string') zoomMode = 100;
+    zoomMode = Math.max(50, (Number(zoomMode) || 100) - 10);
     loadPdf();
   };
 
+  // Fit to page width quickly
+  fitBtn.onclick = () => {
+    zoomMode = 'page-width';
+    loadPdf();
+  };
+
+  // Fullscreen
   fsBtn.onclick = async () => {
     try {
       if (!document.fullscreenElement) {
         await viewer.requestFullscreen();
-        fsBtn.textContent = 'Open full screen';
+        fsBtn.textContent = 'Exit full screen';
       } else {
-        await document.OpenFullscreen();
+        await document.exitFullscreen();
         fsBtn.textContent = 'Full screen';
       }
     } catch (e) {
       console.error('Fullscreen error:', e);
     }
   };
+
+  /* ================ THEME TOGGLER ================ */
+  // Themes: teal (default), deep, light
+  const themes = ['teal','deep','light'];
+
+  // Load saved theme or default to teal
+  const saved = localStorage.getItem('pdf_theme') || 'teal';
+  if (themes.includes(saved)) document.documentElement.setAttribute('data-theme', saved);
+
+  themeBtn.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme') || 'teal';
+    const idx = themes.indexOf(current);
+    const next = themes[(idx + 1) % themes.length];
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('pdf_theme', next);
+  });
+
+  /* ================ OPTIONAL: RESIZE HANDLING ================ */
+  // When viewport changes (orientation switch), re-apply page-width fit
+  // so the doc reflows to visible width nicely.
+  let resizeTo;
+  window.addEventListener('resize', () => {
+    if (zoomMode === 'page-width') {
+      clearTimeout(resizeTo);
+      resizeTo = setTimeout(() => loadPdf(), 200);
+    }
+  });
 </script>
-<noscript>
-  <p>JavaScript is required to view the PDF inline. <a href="TPV%20Munich.pdf">Open the PDF</a>.</p>
-</noscript>
 </body>
 </html>
