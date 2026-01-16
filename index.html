@@ -4,19 +4,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TPV Munich — PDF Viewer</title>
+  <title>TPV B&L Scan me — PDF Viewer</title>
   <meta name="color-scheme" content="light dark" />
   <style>
     :root{
+      /* Unified accent color */
+      --accent: #089ca4;
+
+      /* Base tokens (dark default) */
       --bg: #0b1020;
       --bg-2:#0f152e;
       --card: rgba(255,255,255,0.08);
       --text:#e8ecf4;
       --muted:#b7c1d6;
-      --a1:#7c3aed; /* purple */
-      --a2:#06b6d4; /* cyan */
-      --a3:#22c55e; /* green */
-      --ring: 0 0 0 2px color-mix(in srgb, var(--a2) 50%, transparent);
+      --ring: 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent);
       --shadow-lg: 0 10px 30px rgba(0,0,0,.35);
     }
     [data-theme="light"]{
@@ -27,10 +28,10 @@
     html,body{height:100%}
     body{
       margin:0; color:var(--text);
+      /* subtle background with the same accent color */
       background:
-        radial-gradient(1200px 600px at 10% -10%, #7c3aed22, transparent 50%),
-        radial-gradient(1200px 700px at 120% 10%, #06b6d422, transparent 50%),
-        radial-gradient(900px 500px at -10% 110%, #22c55e22, transparent 45%),
+        radial-gradient(1200px 600px at 10% -10%, color-mix(in srgb, var(--accent) 40%, transparent), transparent 55%),
+        radial-gradient(1000px 600px at 120% 10%, color-mix(in srgb, var(--accent) 32%, transparent), transparent 55%),
         linear-gradient(160deg, var(--bg), var(--bg-2));
       font: 15px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
       overflow-y: overlay;
@@ -38,98 +39,150 @@
 
     .wrap{ max-width:1100px; margin:clamp(16px,3.5vw,48px) auto; padding:0 16px; }
 
+    /* Header */
     .header{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }
     .brand{ display:flex; align-items:center; gap:12px; font-weight:700; letter-spacing:.2px; }
-    .logo{ width:38px; height:38px; border-radius:12px; position:relative;
-           background: conic-gradient(from 40deg, var(--a1), var(--a2), var(--a3), var(--a1));
-           box-shadow: 0 4px 18px rgba(124,58,237,.45); }
-    .logo::after{ content:""; position:absolute; inset:2px; border-radius:10px;
-                  background: linear-gradient(180deg, #ffffffaa, #ffffff10); }
+    .logo{
+      width:38px; height:38px; border-radius:12px; position:relative;
+      background: conic-gradient(from 40deg, color-mix(in srgb, var(--accent) 85%, white 15%), var(--accent));
+      filter: saturate(120%);
+      box-shadow: 0 4px 18px color-mix(in srgb, var(--accent) 60%, transparent);
+    }
+    .logo::after{
+      content:""; position:absolute; inset:2px; border-radius:10px;
+      background: linear-gradient(180deg, #ffffffaa, #ffffff10);
+    }
     .title{ font-size:clamp(18px,2.4vw,24px) }
     .muted{ color:var(--muted); font-weight:500 }
 
-    .card{ position:relative; border-radius:18px; background:linear-gradient(180deg, color-mix(in srgb, var(--card) 90%, transparent), var(--card));
-           box-shadow:var(--shadow-lg); overflow:hidden; backdrop-filter: blur(8px);
-           border:1px solid color-mix(in srgb, var(--text) 10%, transparent); isolation:isolate; }
-    .card::before{ content:""; position:absolute; inset:-1px; z-index:-1; border-radius:20px;
-                   background:linear-gradient(120deg, color-mix(in srgb, var(--a1) 70%, transparent),
-                                                      color-mix(in srgb, var(--a2) 70%, transparent),
-                                                      color-mix(in srgb, var(--a3) 70%, transparent));
-                   filter: blur(18px) saturate(120%); opacity:.55;
-                   animation: float 8s ease-in-out infinite alternate; }
-    @keyframes float{ from{ transform:translateY(-4px) rotate(.5deg); opacity:.5 }
-                      to  { transform:translateY(4px) rotate(-.5deg); opacity:.8 } }
+    /* Card */
+    .card{
+      position:relative; border-radius:18px;
+      background: linear-gradient(180deg, color-mix(in srgb, var(--card) 90%, transparent), var(--card));
+      box-shadow: var(--shadow-lg);
+      overflow:hidden;
+      backdrop-filter: blur(8px);
+      border: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+      isolation: isolate;
+    }
+    .card::before{
+      content:""; position:absolute; inset:-1px; z-index:-1; border-radius:20px;
+      background: linear-gradient(120deg, color-mix(in srgb, var(--accent) 80%, transparent), color-mix(in srgb, var(--accent) 60%, transparent));
+      filter: blur(18px) saturate(120%); opacity:.55;
+      animation: float 8s ease-in-out infinite alternate;
+    }
+    @keyframes float{
+      from { transform: translateY(-4px) rotate(0.5deg); opacity:.5 }
+      to   { transform: translateY(4px) rotate(-0.5deg); opacity:.8 }
+    }
 
-    .card-head{ display:flex; align-items:center; justify-content:space-between; gap:10px;
-                padding:14px clamp(14px,2.2vw,20px);
-                border-bottom:1px solid color-mix(in srgb, var(--text) 10%, transparent); }
-    .card-title{ font-size:clamp(16px,2vw,20px); font-weight:700; }
+    .card-head{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:14px clamp(14px, 2.2vw, 20px);
+      border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+    }
+    .card-title{ font-size:clamp(16px, 2vw, 20px); font-weight:700; }
+
+    /* Actions */
     .actions{ display:flex; flex-wrap:wrap; gap:8px; }
-
-    .btn{ appearance:none; border:none; cursor:pointer; padding:10px 12px; border-radius:12px; font-weight:700;
-          color:#0b1020; background:linear-gradient(180deg,#fff,#eaf1ff);
-          box-shadow:0 6px 20px rgba(16,22,36,.15);
-          transition:transform .12s ease, box-shadow .12s ease; display:inline-flex; align-items:center; gap:8px; text-decoration:none; }
-    .btn:hover{ transform:translateY(-2px); box-shadow:0 10px 28px rgba(16,22,36,.22) }
-    .btn:active{ transform:translateY(0) scale(.98) }
-    .btn.accent{ color:#fff; background:linear-gradient(135deg,var(--a1),var(--a2));
-                 box-shadow:0 8px 24px color-mix(in srgb, var(--a1) 45%, transparent); }
-    .btn.ghost{ background:transparent; color:var(--text);
-                border:1px solid color-mix(in srgb, var(--text) 16%, transparent); box-shadow:none; }
+    .btn{
+      appearance:none; border:none; cursor:pointer;
+      padding:10px 12px; border-radius:12px; font-weight:700;
+      color:#0b1020; background: linear-gradient(180deg,#fff,#ebf9fb);
+      box-shadow: 0 6px 20px rgba(16,22,36,.15);
+      transition: transform .12s ease, box-shadow .12s ease;
+      display:inline-flex; align-items:center; gap:8px; text-decoration:none;
+    }
+    .btn:hover{ transform: translateY(-2px); box-shadow: 0 10px 28px rgba(16,22,36,.22) }
+    .btn:active{ transform: translateY(0) scale(.98) }
+    .btn.accent{
+      color: white;
+      background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #32d6df));
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 45%, transparent);
+    }
+    .btn.ghost{
+      background: transparent; color: var(--text);
+      border:1px solid color-mix(in srgb, var(--text) 16%, transparent);
+      box-shadow: none;
+    }
     .chip{ font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid color-mix(in srgb, var(--text) 16%, transparent); color:var(--muted) }
 
+    /* Viewer */
     .viewer{ position:relative; height:min(84vh, 1000px); background:#0002; }
     .viewer iframe{ width:100%; height:100%; border:0; display:block; background:#1b2236; }
 
-    .loading{ position:absolute; inset:0; display:grid; place-items:center;
-              background:linear-gradient(180deg, #0b102015, transparent); transition:opacity .25s ease; z-index:2; }
-    .spinner{ width:56px; height:56px; border-radius:50%;
-              background:conic-gradient(from 0deg, var(--a2), var(--a1), var(--a3), var(--a2));
-              -webkit-mask:radial-gradient(farthest-side, transparent 62%, #000 63%);
-                      mask:radial-gradient(farthest-side, transparent 62%, #000 63%);
-              animation:spin 1s linear infinite; filter:saturate(130%) drop-shadow(0 6px 20px rgba(0,0,0,.35)); }
-    @keyframes spin{ to{ transform:rotate(1turn) } }
+    /* Loading overlay */
+    .loading{
+      position:absolute; inset:0; display:grid; place-items:center;
+      background: linear-gradient(180deg, #0b102015, transparent);
+      transition: opacity .25s ease; z-index:2;
+    }
+    .spinner{
+      width:56px; height:56px; border-radius:50%;
+      background: conic-gradient(from 0deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #9ff2f7), var(--accent));
+      -webkit-mask: radial-gradient(farthest-side, transparent 62%, #000 63%);
+              mask: radial-gradient(farthest-side, transparent 62%, #000 63%);
+      animation: spin 1s linear infinite;
+      filter: saturate(130%) drop-shadow(0 6px 20px rgba(0,0,0,.35));
+    }
+    @keyframes spin{ to{ transform: rotate(1turn)} }
 
-    .foot{ display:flex; align-items:center; justify-content:space-between; gap:10px;
-           padding:10px clamp(14px,2.2vw,20px);
-           border-top:1px solid color-mix(in srgb, var(--text) 10%, transparent);
-           color:var(--muted); font-size:13px; }
+    /* Footer */
+    .foot{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding: 10px clamp(14px, 2.2vw, 20px);
+      border-top: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+      color: var(--muted);
+      font-size: 13px;
+    }
 
+    /* Theme toggle */
     .toggle{ display:inline-flex; align-items:center; gap:10px; color:var(--muted); user-select:none; cursor:pointer; }
-    .switch{ width:48px; height:28px; border-radius:999px; position:relative; background:#ffffff22;
-             border:1px solid color-mix(in srgb, var(--text) 20%, transparent); }
-    .switch::after{ content:""; width:22px; height:22px; border-radius:50%; position:absolute; top:2px; left:2px;
-                    background:#fff; box-shadow:0 4px 12px rgba(0,0,0,.2);
-                    transition:left .2s ease; }
+    .switch{
+      width:48px; height:28px; border-radius:999px; position:relative; background:#ffffff22;
+      border:1px solid color-mix(in srgb, var(--text) 20%, transparent);
+    }
+    .switch::after{
+      content:""; width:22px; height:22px; border-radius:50%;
+      position:absolute; top:2px; left:2px; background:white;
+      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+      transition: left .2s ease;
+    }
     [data-theme="light"] .switch::after{ left:24px }
 
+    /* Mobile tweaks */
     @media (max-width:720px){
-      .viewer{ height:78vh }
+      .viewer{ height: 78vh }
       .actions{ width:100% }
       .header{ flex-direction:column; align-items:flex-start }
       .foot{ flex-direction:column; align-items:flex-start; gap:6px }
     }
-    .btn:focus-visible, .switch:focus-visible { outline:none; box-shadow:var(--ring) }
-    a{ color:color-mix(in srgb, var(--a2) 80%, white) }
+
+    /* Accessibility focus */
+    .btn:focus-visible, .switch:focus-visible { outline: none; box-shadow: var(--ring) }
+    a{ color: color-mix(in srgb, var(--accent) 80%, white) }
   </style>
 </head>
 <body>
   <div class="wrap">
+    <!-- Header -->
     <header class="header">
       <div class="brand">
-        <div class="logo"></div>
+        <div class="logo" aria-hidden="true"></div>
         <div>
-          <div class="title">Document Viewer</div>
+          <div class="title">TPV B&amp;L Scan me</div>
           <div class="muted">Fast • Clean • No watermark</div>
         </div>
       </div>
-      <label class="toggle">
+
+      <label class="toggle" title="Toggle theme">
         <span>Theme</span>
         <div class="switch" id="themeSwitch" tabindex="0" role="switch" aria-checked="false"></div>
       </label>
     </header>
 
-    <section class="card">
+    <!-- Card -->
+    <section class="card" id="card">
       <div class="card-head">
         <div class="card-title">TPV Munich — PDF</div>
         <div class="actions">
@@ -142,7 +195,10 @@
       </div>
 
       <div class="viewer" id="viewer">
-        <div class="loading" id="loading"><div class="spinner" aria-hidden="true"></div></div>
+        <div class="loading" id="loading">
+          <div class="spinner" aria-hidden="true"></div>
+        </div>
+        <!-- Browser’s native PDF viewer -->
         <iframe id="pdfFrame" title="PDF document"></iframe>
       </div>
 
@@ -154,8 +210,10 @@
   </div>
 
   <script>
-    /* CONFIG — your PDF (space encoded) */
-    const pdfUrl = './TPV%20Munich.pdf';
+    /* =========================
+       CONFIG — your PDF path
+       ========================= */
+    const pdfUrl = './TPV%20Munich.pdf'; // keep %20 for the space
 
     /* Elements */
     const frame = document.getElementById('pdfFrame');
@@ -241,7 +299,7 @@
       t.textContent = msg;
       Object.assign(t.style,{
         position:'fixed', left:'50%', bottom:'22px', transform:'translateX(-50%)',
-        background:'linear-gradient(135deg, var(--a2), var(--a1))',
+        background: 'linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #32d6df))',
         color:'#fff', padding:'10px 14px', borderRadius:'12px', boxShadow:'0 8px 24px rgba(0,0,0,.28)',
         zIndex:9999, fontWeight:'700', transition:'opacity .2s ease'
       });
@@ -259,4 +317,3 @@
   </script>
 </body>
 </html>
-``
