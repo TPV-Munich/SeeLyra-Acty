@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>QR Code Generator (Offline)</title>
+<style>
+  :root{
+    --brand:#089CA4;         /* your theme color */
+    --brand-600:#078992;
+    --panel:#ffffff;
+    --text:#0b1f22;
+    --muted:#5a6a6d;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(135deg,#e9fbfd 0%, #ffffff 55%);
+    color:var(--text);
+  }
+  header{ padding:20px 16px 0; text-align:center; }
+  .title{ font-size:clamp(20px,3vw,28px); font-weight:700; color:#05565c; }
+  .wrap{
+    max-width:980px; margin:18px auto 40px; padding:0 16px 32px;
+    display:grid; grid-template-columns: 1.1fr .9fr; gap:22px;
+  }
+  @media (max-width:900px){ .wrap{grid-template-columns:1fr} }
+  .card{
+    background:var(--panel);
+    border:1px solid #e6f5f7;
+    border-radius:14px;
+    box-shadow:0 6px 20px rgba(8,156,164,.10);
+    padding:18px;
+  }
+  .card h2{ margin:0 0 12px; font-size:18px; color:#05565c; }
+  label{ display:block; font-size:13px; color:var(--muted); margin:12px 0 6px; }
+  .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  textarea, select, input[type="number"], input[type="color"]{
+    width:100%; padding:10px 12px; border:1px solid #cfecef; border-radius:10px;
+    outline:none; background:#f7feff; color:#033c41;
+  }
+  textarea{ min-height:84px; resize:vertical; }
+  textarea:focus, select:focus, input:focus{
+    border-color:var(--brand); box-shadow:0 0 0 3px rgba(8,156,164,.18);
+  }
+  .btn{
+    appearance:none; border:0; background:var(--brand); color:white;
+    padding:10px 14px; border-radius:10px; font-weight:600; cursor:pointer;
+    box-shadow:0 6px 16px rgba(8,156,164,.25);
+    transition:.15s transform ease, .15s background ease, .15s box-shadow ease;
+  }
+  .btn:hover{ background:var(--brand-600); transform:translateY(-1px); }
+  .btn.secondary{
+    background:#e8fcfe; color:#066c73; box-shadow:none; border:1px solid #bdebf0;
+  }
+  .hint{ font-size:12px; color:#4a6b6e; }
+  .qrStage{
+    display:grid; place-items:center; min-height:360px; padding:16px;
+    background:conic-gradient(from 180deg at 50% 50%, #f2feff, #ffffff, #f2feff);
+    border:1px dashed #cfecef; border-radius:12px;
+  }
+  .qrBox{
+    background:white; padding:16px; border-radius:12px; border:1px solid #e8f6f8;
+    box-shadow:0 10px 24px rgba(8,156,164,.15);
+  }
+  .actions{ display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+  footer{ text-align:center; color:#5f7b7e; font-size:12px; margin:18px 0 26px; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="title">QR Code Generator — Offline • Theme <span style="color:#089CA4">#089CA4</span></div>
+  </header>
+
+  <div class="wrap">
+    <!-- Left: Controls -->
+    <section class="card">
+      <h2>Content</h2>
+      <label for="qrText">Text / URL</label>
+      <textarea id="qrText" placeholder="Enter URL, text, mailto:, tel:, or anything…">https://tpv-munich.github.io/pdf-viewer/</textarea>
+      <div class="hint">Tip: Paste SharePoint links, internal routes, or deep links to forms.</div>
+
+      <h2 style="margin-top:18px;">Appearance</h2>
+      <div class="row">
+        <div style="flex:1">
+          <label for="size">Size (px)</label>
+          <input type="number" id="size" value="320" min="120" max="1024" step="20" />
+        </div>
+        <div style="width:140px">
+          <label for="ec">Error Correction</label>
+          <select id="ec">
+            <option value="L">L (7%)</option>
+            <option value="M" selected>M (15%)</option>
+            <option value="Q">Q (25%)</option>
+            <option value="H">H (30%)</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div style="flex:1">
+          <label for="fg">Foreground</label>
+          <input type="color" id="fg" value="#089CA4" />
+        </div>
+        <div style="flex:1">
+          <label for="bg">Background</label>
+          <input type="color" id="bg" value="#FFFFFF" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button class="btn" id="btnGenerate">Generate</button>
+        <button class="btn secondary" id="btnClear">Clear</button>
+      </div>
+      <div class="hint" style="margin-top:6px">Runs entirely in your browser • No third parties • No network calls</div>
+    </section>
+
+    <!-- Right: Preview -->
+    <section class="card">
+      <h2>Preview & Export</h2>
+      <div class="qrStage">
+        <div id="qrContainer" class="qrBox" role="img" aria-label="QR code preview"></div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btnPng">Download PNG</button>
+        <button class="btn secondary" id="btnCopy">Copy PNG to Clipboard</button>
+      </div>
+      <div class="hint" id="status" style="margin-top:6px"></div>
+    </section>
+  </div>
+
+  <footer>Local-only QR generator • Ideal for Storyline Web Object and intranet use.</footer>
+
+  <!-- Local library (store offline in qr-generator/js/) -->
+  ./js/qrcode.min.js</script>
+
+  <script>
+    // Map dropdown to QRCode.CorrectLevel
+    const EC_MAP = { L: QRCode.CorrectLevel.L, M: QRCode.CorrectLevel.M, Q: QRCode.CorrectLevel.Q, H: QRCode.CorrectLevel.H };
+
+    const elText = document.getElementById('qrText');
+    const elSize = document.getElementById('size');
+    const elEC   = document.getElementById('ec');
+    const elFG   = document.getElementById('fg');
+    const elBG   = document.getElementById('bg');
+    const box    = document.getElementById('qrContainer');
+    const status = document.getElementById('status');
+
+    let qr; // QRCode instance
+
+    function gen() {
+      const text = (elText.value || '').trim();
+      const size = Math.max(120, Math.min(1024, parseInt(elSize.value || '320', 10)));
+      const ec   = EC_MAP[elEC.value] || QRCode.CorrectLevel.M;
+      const fg   = elFG.value || '#089CA4';
+      const bg   = elBG.value || '#FFFFFF';
+
+      box.innerHTML = '';
+      status.textContent = '';
+
+      if (!text) { status.textContent = 'Enter some text/URL above.'; return; }
+
+      qr = new QRCode(box, {
+        text: text,
+        width: size,
+        height: size,
+        colorDark: fg,
+        colorLight: bg,
+        correctLevel: ec
+      });
+    }
+
+    function getCanvasFromBox() {
+      const canvas = box.querySelector('canvas');
+      if (canvas) return canvas;
+
+      const img = box.querySelector('img');
+      if (img) {
+        const s = Math.max(120, Math.min(2048, parseInt(elSize.value || '320', 10)));
+        const c = document.createElement('canvas');
+        c.width = c.height = s;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = elBG.value || '#FFFFFF';
+        ctx.fillRect(0,0,s,s);
+        ctx.drawImage(img, 0, 0, s, s);
+        return c;
+      }
+      return null;
+    }
+
+    async function downloadPNG() {
+      const canvas = getCanvasFromBox();
+      if (!canvas) return;
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+      const a = document.createElement('a');
+      const safeName = (elText.value || 'qr').slice(0,80).replace(/[^a-z0-9\-_.]+/gi,'_');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${safeName || 'qr'}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+    }
+
+    async function copyPNG() {
+      try {
+        const canvas = getCanvasFromBox();
+        if (!canvas || !navigator.clipboard || !window.ClipboardItem) return;
+        const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        alert('QR image copied to clipboard.');
+      } catch (e) {
+        alert('Copy failed in this browser. Try downloading PNG instead.');
+      }
+    }
+
+    function clearAll() {
+      elText.value = '';
+      box.innerHTML = '';
+      status.textContent = '';
+    }
+
+    document.getElementById('btnGenerate').addEventListener('click', gen);
+    document.getElementById('btnPng').addEventListener('click', downloadPNG);
+    document.getElementById('btnCopy').addEventListener('click', copyPNG);
+    document.getElementById('btnClear').addEventListener('click', clearAll);
+
+    // Auto-generate initial example
+    gen();
+  </script>
+</body>
+</html>
