@@ -17,7 +17,7 @@
       --bg:#0b1020;                    /* dark background */
       --bg-2:#0f152e;
       --card:rgba(255,255,255,.08);
-      --ring:0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent);
+      --ring:0 0 0 2px rgba(8,156,164,.45);
       --shadow-lg:0 10px 30px rgba(0,0,0,.35);
     }
     /* Light theme keeps the SAME accent */
@@ -34,8 +34,8 @@
     body{
       margin:0; color:var(--text);
       background:
-        radial-gradient(1200px 600px at 10% -10%, color-mix(in srgb, var(--accent) 42%, transparent), transparent 55%),
-        radial-gradient(1000px 600px at 120% 10%, color-mix(in srgb, var(--accent) 30%, transparent), transparent 55%),
+        radial-gradient(1200px 600px at 10% -10%, rgba(8,156,164,.28), transparent 55%),
+        radial-gradient(1000px 600px at 120% 10%, rgba(8,156,164,.22), transparent 55%),
         linear-gradient(160deg, var(--bg), var(--bg-2));
       font:15px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
       overflow-y: overlay;
@@ -50,23 +50,26 @@
     }
     .brand{ display:grid; gap:10px; justify-items:start }
 
+    /* Show logo exactly as the file (no white tab/box) */
     .logo-img{
-      width:min(110px, 28vw);
-      height:min(110px, 28vw);
-      border-radius:18px;              /* rounded square */
-      object-fit:contain;
-      background:#fff;                  /* keeps PNG crisp on dark */
-      padding:12px;
-      box-shadow:0 10px 30px rgba(8,156,164,.35); /* glow with #089ca4 */
+      width:min(120px, 32vw);
+      height:auto;            /* preserve original aspect ratio */
+      display:block;
+      background:transparent; /* no white background */
+      padding:0;              /* no extra padding */
+      border-radius:0;        /* no rounding */
+      box-shadow:none;        /* no glow */
+      image-rendering:auto;
     }
     .brand:hover .logo-img{ transform:translateY(-2px); transition:transform .12s ease; }
 
-    .title{ font-size:clamp(22px, 3.2vw, 30px); font-weight:800; }
+    .title{ font-size:clamp(22px, 3.2vw, 30px); font-weight:800; margin:0; }
 
     /* Theme toggle */
     .toggle{ display:inline-flex; align-items:center; gap:10px; color:var(--muted); user-select:none; cursor:pointer; }
-    .switch{ width:52px; height:30px; border-radius:999px; position:relative; background:#ffffff22; border:1px solid color-mix(in srgb, var(--text) 20%, transparent) }
+    .switch{ width:52px; height:30px; border-radius:999px; position:relative; background:#ffffff22; border:1px solid rgba(255,255,255,.15) }
     .switch::after{ content:""; width:24px; height:24px; border-radius:50%; position:absolute; top:3px; left:3px; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,.2); transition:left .2s ease }
+    [data-theme="light"] .switch{ border-color: rgba(16,22,36,.18) }
     [data-theme="light"] .switch::after{ left:25px }
 
     /* ===== Card / Toolbar ===== */
@@ -74,21 +77,19 @@
       position:relative; border-radius:18px; overflow:hidden; isolation:isolate;
       background:linear-gradient(180deg, color-mix(in srgb, var(--card) 90%, transparent), var(--card));
       box-shadow:var(--shadow-lg);
-      border:1px solid color-mix(in srgb, var(--text) 10%, transparent);
+      border:1px solid rgba(255,255,255,.12);
       backdrop-filter:blur(8px);
     }
-    .card::before{
-      content:""; position:absolute; inset:-1px; z-index:-1; border-radius:20px;
-      background:linear-gradient(120deg, color-mix(in srgb, var(--accent) 78%, transparent), color-mix(in srgb, var(--accent) 58%, transparent));
-      filter:blur(18px) saturate(120%); opacity:.55;
-    }
+    [data-theme="light"] .card{ border-color: rgba(16,22,36,.12) }
 
     .card-head{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
       padding:14px clamp(14px,2.2vw,20px);
-      border-bottom:1px solid color-mix(in srgb, var(--text) 10%, transparent);
-      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 28%, transparent), transparent 60%);
+      border-bottom:1px solid rgba(255,255,255,.12);
+      background: linear-gradient(135deg, rgba(8,156,164,.25), transparent 60%);
     }
+    [data-theme="light"] .card-head{ border-color: rgba(16,22,36,.12) }
+
     .card-title{ font-size:clamp(16px,2vw,20px); font-weight:800; }
 
     .actions{ display:flex; flex-wrap:wrap; gap:8px; }
@@ -103,14 +104,16 @@
     .btn:hover{ transform:translateY(-2px); box-shadow:0 10px 28px rgba(16,22,36,.22) }
     .btn:active{ transform:translateY(0) scale(.98) }
     .btn.accent{
-      color:#fff; background:linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #32d6df));
-      box-shadow:0 8px 24px color-mix(in srgb, var(--accent) 45%, transparent);
+      color:#fff; background:linear-gradient(135deg, var(--accent), #16c4cf);
+      box-shadow:0 8px 24px rgba(8,156,164,.45);
     }
-    .btn.ghost{ background:transparent; color:var(--text); border:1px solid color-mix(in srgb, var(--text) 16%, transparent) }
-    .chip{ font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid color-mix(in srgb, var(--text) 16%, transparent); color:var(--muted) }
+    .btn.ghost{ background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.16) }
+    [data-theme="light"] .btn.ghost{ border-color: rgba(16,22,36,.16) }
+    .chip{ font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.16); color:var(--muted) }
+    [data-theme="light"] .chip{ border-color: rgba(16,22,36,.16) }
 
     /* ===== Viewer =====
-       Height will be calculated to fit ONE page on screen.
+       Height is set in JS to fit ONE page on screen.
     */
     .viewer{ position:relative; background:#0002; height:70vh; }
     .viewer iframe{ width:100%; height:100%; border:0; display:block; background:#1b2236; }
@@ -119,7 +122,7 @@
     .loading{ position:absolute; inset:0; display:grid; place-items:center; background:linear-gradient(180deg, #0b102015, transparent); transition:opacity .25s ease; z-index:2; }
     .spinner{
       width:56px; height:56px; border-radius:50%;
-      background:conic-gradient(from 0deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #9ff2f7), var(--accent));
+      background:conic-gradient(from 0deg, var(--accent), #9ff2f7, var(--accent));
       -webkit-mask:radial-gradient(farthest-side, transparent 62%, #000 63%);
               mask:radial-gradient(farthest-side, transparent 62%, #000 63%);
       animation:spin 1s linear infinite; filter:saturate(130%) drop-shadow(0 6px 20px rgba(0,0,0,.35));
@@ -129,9 +132,10 @@
     .foot{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
       padding:10px clamp(14px, 2.2vw, 20px);
-      border-top:1px solid color-mix(in srgb, var(--text) 10%, transparent);
+      border-top:1px solid rgba(255,255,255,.12);
       color:var(--muted); font-size:13px;
     }
+    [data-theme="light"] .foot{ border-color: rgba(16,22,36,.12) }
 
     @media (max-width:720px){
       .header{ flex-direction:row; align-items:flex-start; gap:12px }
@@ -140,7 +144,7 @@
     }
 
     .btn:focus-visible, .switch:focus-visible { outline:none; box-shadow: var(--ring) }
-    a{ color: color-mix(in srgb, var(--accent) 80%, white) }
+    a{ color: #0fb9c3 }
   </style>
 </head>
 <body>
@@ -148,10 +152,9 @@
     <!-- ===== Header (logo above title) ===== -->
     <header class="header" id="topHeader">
       <div class="brand">
-        <!-- Real image tag for your uploaded logo -->
-        <img src="./BL_Technolas.png" alt="Bausch + Lomb Technolas logo" class="logo-img" />
+        <!-- Real image tag so the path doesn’t render as text -->
+        <img class="logo-img" src="BL_Technolas.png" alt="Bausch + Lomb | Technolas logo" loading="eager">
         <div class="title">TPV B&amp;L Scan me</div>
-        <!-- subtitle removed as requested -->
       </div>
 
       <label class="toggle" title="Toggle theme">
@@ -166,7 +169,7 @@
         <div class="card-title">TPV Munich — PDF</div>
         <div class="actions">
           <button class="btn accent" id="openBtn">Open</button>
-          <a id="downloadBtn" class="btn" href="./TPV%20Munich.pdf" download>Download</a>
+          <a id="downloadBtn" href="TPV%20Munich.pdf" download class="btn">Download</a>
           <button class="btn" id="copyBtn">Copy link</button>
           <button class="btn ghost" id="fullscreenBtn">Full screen</button>
           <button class="btn ghost" id="fitPageBtn">Fit page</button>
@@ -206,14 +209,14 @@
     const downloadBtn = document.getElementById('downloadBtn');
 
     /* =========================
-       Load PDF (no freeze) — default: Fit page
+       Load PDF once (no freeze) — default: Fit page
        ========================= */
     function setZoom(mode){   // 'page' or 'width'
       const hash = (mode === 'width') ? 'zoom=page-width' : 'zoom=page-fit';
       frame.src = `${pdfUrl}#page=1&${hash}&toolbar=1&statusbar=0&navpanes=0`;
       statusChip.textContent = (mode === 'width') ? 'Fit width' : 'Fit page';
     }
-    setZoom('page'); // default: show whole page
+    setZoom('page'); // initial
     downloadBtn.href = pdfUrl;
 
     let loaded = false;
@@ -240,8 +243,8 @@
       const headerH = document.getElementById('topHeader').offsetHeight || 0;
       const headH   = document.getElementById('cardHead').offsetHeight || 0;
       const footH   = document.getElementById('cardFoot').offsetHeight || 0;
-      const wrapMargins = 32; // outer spacings
-      const h = Math.max(320, window.innerHeight - headerH - headH - footH - wrapMargins);
+      const wrapMargins = 32; // approximate outer spacings
+      const h = Math.max(340, window.innerHeight - headerH - headH - footH - wrapMargins);
       viewer.style.height = h + 'px';
     }
     let rAF, t;
@@ -250,7 +253,7 @@
       if (t) clearTimeout(t);
       t = setTimeout(()=> { rAF = requestAnimationFrame(computeHeight); }, 120);
     }
-    // initial + on resize
+    // initial + on resize + on theme change
     computeHeight();
     addEventListener('resize', sizeViewerDebounced);
 
@@ -311,7 +314,7 @@
       t.textContent = msg;
       Object.assign(t.style,{
         position:'fixed', left:'50%', bottom:'22px', transform:'translateX(-50%)',
-        background:'linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #32d6df))',
+        background:'linear-gradient(135deg, var(--accent), #16c4cf)',
         color:'#fff', padding:'10px 14px', borderRadius:'12px', boxShadow:'0 8px 24px rgba(0,0,0,.28)',
         zIndex:9999, fontWeight:'800', transition:'opacity .2s ease'
       });
