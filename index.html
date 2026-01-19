@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Quick Guide: RealWear Navigator 520</title>
+  <title>Quick Guide – RealWear Navigator 520</title>
 
   <style>
     /* ===================== THEME SYSTEM ===================== */
@@ -59,7 +59,7 @@
         radial-gradient(1200px 600px at 10% -10%, color-mix(in oklab, var(--accent) 28%, transparent), transparent 55%),
         radial-gradient(1000px 600px at 120% 10%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 55%),
         linear-gradient(160deg, var(--bg), var(--bg-2));
-      font:12px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Arial;
     }
     .wrap{max-width:1100px;margin:32px auto;padding:0 16px}
 
@@ -103,6 +103,8 @@
       display:flex;
       flex-wrap:wrap;
       gap:8px;
+      align-items:center;
+      justify-content:flex-end;
     }
 
     /* ===== Buttons ===== */
@@ -115,6 +117,9 @@
       display:inline-flex;align-items:center;gap:6px;
       transition:transform .08s ease, filter .15s ease;
       text-decoration:none;
+      font-size:15px;
+      line-height:1;    /* compact */
+      white-space:nowrap;
     }
     .btn:active{transform:scale(.97)}
     .btn.secondary{
@@ -122,6 +127,13 @@
       background:transparent;
       border:1px solid var(--border);
       box-shadow:none;
+    }
+
+    /* Compact button variant for phones */
+    .btn.sm{
+      padding:8px 12px;
+      border-radius:10px;
+      font-size:14px;
     }
 
     /* ===== Viewer ===== */
@@ -147,6 +159,10 @@
       color:#dcdcdc;
     }
     .fallback.hidden{display:none;}
+    .fallback .btn{ box-shadow:none; }
+    .fallback .btn.secondary{
+      background:#111;border-color:#333;color:#e6e6e6;
+    }
 
     /* ===== Footer ===== */
     .foot{
@@ -163,14 +179,19 @@
     /* Small screens (phones) */
     @media (max-width:640px){
       .viewer{height:72svh;}
-      .card-head{gap:6px}
-      .actions{gap:6px}
-      .btn{padding:9px 12px}
+      .card-head{gap:8px}
+      .actions{
+        gap:6px;
+        justify-content:flex-end;
+      }
+      .btn{padding:9px 12px;font-size:14px}
+      .btn.sm{padding:7px 11px;font-size:13px}
 
       /* Make the title smaller on mobile */
-      .card-title{
-        font-size:16px;   /* adjust to 12px if you want even smaller */
-      }
+      .card-title{ font-size:16px; }
+
+      /* Make header controls sit neatly on one line when possible */
+      .actions > *{ flex:0 0 auto; }
     }
   </style>
 </head>
@@ -180,18 +201,18 @@
 
   <!-- Header -->
   <header class="header">
-    BL_Technolas.png
-    <button class="btn secondary" id="themeBtn" title="Change theme">Theme</button>
+    <img class="logo-img" src="BL_Technolas.png" alt="Bausch + Lomb | Technolas logo">
+    <button class="btn secondary sm" id="themeBtn" title="Change theme">Theme</button>
   </header>
 
   <!-- Card -->
   <section class="card">
     <div class="card-head">
-      <div class="card-title">Quick Guide: RealWear Navigator 520 — PDF</div>
+      <div class="card-title">SeeLyra Acty Guide Support — PDF</div>
       <div class="actions">
-        <button class="btn" id="openBtn" title="Open in new tab">Open</button>
-        <a class="btn" id="downloadBtn" download="TPV-Munich.pdf" title="Download PDF">Download</a>
-        <button class="btn" id="fullscreenBtn">Full screen</button>
+        <button class="btn sm" id="openBtn" title="Open in new tab">Open</button>
+        <a class="btn sm" id="downloadBtn" download="TPV-Munich.pdf" title="Download PDF">Download</a>
+        <button class="btn sm" id="fullscreenBtn">Full screen</button>
       </div>
     </div>
 
@@ -205,9 +226,9 @@
       <div class="fallback hidden" id="fallbackMsg">
         <strong>Can’t display the PDF here.</strong>
         <div>Some mobile browsers block embedded PDFs. Use <b>Open</b> to view it in a new tab.</div>
-        <div>
-          <a class="btn" id="fallbackOpen">Open</a>
-          <a class="btn secondary" id="fallbackDownload" download="TPV-Munich.pdf">Download</a>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+          <a class="btn sm" id="fallbackOpen">Open</a>
+          <a class="btn sm secondary" id="fallbackDownload" download="TPV-Munich.pdf">Download</a>
         </div>
       </div>
     </div>
@@ -247,10 +268,8 @@
 
   /* ================ BUILD SRC WITH FIT PARAMS ================ */
   function buildPdfSrc() {
-    // Mobile: FitH works better for width fit
-    if (isMobile) return `${pdfUrl}#view=FitH`;
-    // Desktop: try page-width + FitH
-    return `${pdfUrl}#zoom=page-width&view=FitH`;
+    if (isMobile) return `${pdfUrl}#view=FitH`;         // Mobile: horizontal fit
+    return `${pdfUrl}#zoom=page-width&view=FitH`;       // Desktop
   }
 
   function useIframe() {
@@ -265,6 +284,13 @@
   }
 
   function applyRenderer() {
+    // On iOS, many versions block embed; skip straight to fallback view
+    if (isIOS) {
+      frame.style.display = 'none';
+      obj.style.display = 'none';
+      fallbackMsg.classList.remove('hidden');
+      return;
+    }
     if (isMobile) useObject();
     else useIframe();
   }
@@ -309,21 +335,24 @@
   /* ================ INIT & FALLBACKS ================ */
   applyRenderer();
 
-  // Show fallback message if embedding is blocked
-  setTimeout(() => {
-    const blocked =
-      (isMobile && !obj.contentDocument) ||
-      (!isMobile && !frame.contentDocument);
-    if (blocked) {
-      fallbackMsg.classList.remove('hidden');
-    } else {
-      fallbackMsg.classList.add('hidden');
-    }
-  }, 900);
+  // If not iOS and embedding still fails, show fallback after a short check
+  if (!isIOS) {
+    setTimeout(() => {
+      const blocked =
+        (isMobile && !obj.contentDocument) ||
+        (!isMobile && !frame.contentDocument);
+      if (blocked) {
+        fallbackMsg.classList.remove('hidden');
+      } else {
+        fallbackMsg.classList.add('hidden');
+      }
+    }, 900);
+  }
 
-  // Re-apply on orientation change
+  // Re-apply on orientation change (not for iOS forced fallback)
   let resizeTo;
   window.addEventListener('resize', () => {
+    if (isIOS) return;
     clearTimeout(resizeTo);
     resizeTo = setTimeout(() => {
       if (isMobile) obj.data = buildPdfSrc();
