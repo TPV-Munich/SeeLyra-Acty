@@ -3,10 +3,7 @@
 <html lang="en" data-theme="teal">
 <head>
   <meta charset="utf-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>SeeLyra Acty Guide Support — PDF Viewer</title>
 
   <style>
@@ -126,7 +123,7 @@
 
     /* ===== Viewer ===== */
     .viewer{
-      /* Use svh so the viewer fits phone screen better with browser chrome */
+      /* svh fits phone screen better with browser bars */
       height:75svh;
       background:#000;
       position:relative;
@@ -186,19 +183,17 @@
       <div class="actions">
         <button class="btn" id="openBtn" title="Open in new tab">Open</button>
         <a class="btn" id="downloadBtn" download="TPV-Munich.pdf" title="Download PDF">Download</a>
-        <button class="btn" id="fitBtn" title="Fit page width">Fit</button>
         <button class="btn" id="fullscreenBtn">Full screen</button>
       </div>
     </div>
 
     <div class="viewer" id="viewer">
-      <!-- Desktop: iframe -->
+      <!-- Desktop prefers iframe -->
       <iframe id="pdfFrame" allow="fullscreen"></iframe>
-
-      <!-- Mobile: object fallback (we’ll switch to this on phones) -->
+      <!-- Mobile prefers object -->
       <object id="pdfObject" data="" type="application/pdf" aria-label="PDF"></object>
 
-      <!-- Last resort fallback -->
+      <!-- Fallback -->
       <div class="fallback hidden" id="fallbackMsg">
         <strong>Can’t display the PDF here.</strong>
         <div>Some mobile browsers block embedded PDFs. Use <b>Open</b> to view it in a new tab.</div>
@@ -220,13 +215,13 @@
 
 <script>
   /* ================ CONFIG ================ */
-  const pdfUrl = './TPV%20Munich.pdf';
+  // Your file is in the root next to index.html
+  const pdfUrl = 'TPV%20Munich.pdf';
 
   const frame   = document.getElementById('pdfFrame');
   const obj     = document.getElementById('pdfObject');
   const viewer  = document.getElementById('viewer');
   const fsBtn   = document.getElementById('fullscreenBtn');
-  const fitBtn  = document.getElementById('fitBtn');
   const themeBtn= document.getElementById('themeBtn');
 
   const openBtn = document.getElementById('openBtn');
@@ -236,21 +231,17 @@
   const fbOpen = document.getElementById('fallbackOpen');
   const fbDl   = document.getElementById('fallbackDownload');
 
-  // Simple device detection
+  // Device detection
   const ua = navigator.userAgent || '';
   const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
   const isAndroid = /Android/.test(ua);
   const isMobile = isIOS || isAndroid;
 
-  /* ================ PDF ZOOM (initial fit) ================ */
-  // On desktop, try page-width in iframe; on mobile, prefer object with FitH.
-  let zoomMode = isMobile ? 'FitH' : 'page-width';
-
+  /* ================ BUILD SRC WITH FIT PARAMS ================ */
   function buildPdfSrc() {
-    if (isMobile) {
-      return `${pdfUrl}#view=FitH`;
-    }
-    // desktop
+    // Mobile: FitH works better for width fit
+    if (isMobile) return `${pdfUrl}#view=FitH`;
+    // Desktop: try page-width + FitH
     return `${pdfUrl}#zoom=page-width&view=FitH`;
   }
 
@@ -265,27 +256,15 @@
     obj.data = buildPdfSrc();
   }
 
-  function applyPreferredRenderer() {
-    if (isMobile) {
-      useObject();   // mobile uses <object> — tends to fit width better
-    } else {
-      useIframe();   // desktop iframe is fine
-    }
+  function applyRenderer() {
+    if (isMobile) useObject();
+    else useIframe();
   }
 
-  /* ================ BASIC ACTIONS ================ */
+  /* ================ ACTIONS ================ */
   openBtn.onclick = () => window.open(pdfUrl, '_blank', 'noopener,noreferrer');
   [dlBtn, fbDl].forEach(a => a.href = pdfUrl);
   fbOpen.href = pdfUrl;
-
-  fitBtn.onclick = () => {
-    // Re-apply the initial fit for each renderer
-    if (isMobile) {
-      obj.data = buildPdfSrc();
-    } else {
-      frame.src = buildPdfSrc();
-    }
-  };
 
   /* ================ FULLSCREEN ================ */
   async function toggleFullscreen() {
@@ -307,13 +286,12 @@
     fsBtn.textContent = document.fullscreenElement ? 'Exit full screen' : 'Full screen';
   });
 
-  /* ================ THEME TOGGLER ================ */
+  /* ================ THEME ================ */
   const themes = ['teal','deep','light'];
   const saved = localStorage.getItem('pdf_theme') || 'teal';
   if (themes.includes(saved)) document.documentElement.setAttribute('data-theme', saved);
-
   themeBtn.addEventListener('click', () => {
-   ') || 'teal';
+    const current = document.documentElement.getAttribute('data-theme') || 'teal';
     const idx = themes.indexOf(current);
     const next = themes[(idx + 1) % themes.length];
     document.documentElement.setAttribute('data-theme', next);
@@ -321,10 +299,9 @@
   });
 
   /* ================ INIT & FALLBACKS ================ */
-  // Prefer object on mobile, iframe on desktop
-  applyPreferredRenderer();
+  applyRenderer();
 
-  // If embedded content is blocked, show fallback layer
+  // Show fallback message if embedding is blocked
   setTimeout(() => {
     const blocked =
       (isMobile && !obj.contentDocument) ||
@@ -334,22 +311,19 @@
     } else {
       fallbackMsg.classList.add('hidden');
     }
-  }, 1000);
+  }, 900);
 
-  // Re-apply fit after resize (orientation change on phones)
+  // Re-apply on orientation change
   let resizeTo;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTo);
     resizeTo = setTimeout(() => {
-      if (isMobile) {
-        obj.data = buildPdfSrc();
-      } else {
-        frame.src = buildPdfSrc();
-      }
-    }, 220);
+      if (isMobile) obj.data = buildPdfSrc();
+      else frame.src = buildPdfSrc();
+    }, 200);
   });
 
-  // Optional: warn in console if the file is missing
+  // Optional console warning if file missing
   fetch(pdfUrl, { method:'GET' }).then(r => {
     if (!r.ok) {
       console.warn('PDF not found or blocked:', r.status);
@@ -359,3 +333,4 @@
 </script>
 </body>
 </html>
+``
