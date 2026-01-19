@@ -59,7 +59,7 @@
         radial-gradient(1200px 600px at 10% -10%, color-mix(in oklab, var(--accent) 28%, transparent), transparent 55%),
         radial-gradient(1000px 600px at 120% 10%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 55%),
         linear-gradient(160deg, var(--bg), var(--bg-2));
-      font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      font:12px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Arial;
     }
     .wrap{max-width:1100px;margin:32px auto;padding:0 16px}
 
@@ -92,10 +92,13 @@
       padding:14px 20px;
       border-bottom:1px solid var(--border);
     }
+
+    /* Title size tuned for mobile */
     .card-title{
-      font-size:18px;
+      font-size:18px;   /* desktop/tablet */
       font-weight:800;
     }
+
     .actions{
       display:flex;
       flex-wrap:wrap;
@@ -157,12 +160,17 @@
       align-items:center;
     }
 
-    /* Small screens */
+    /* Small screens (phones) */
     @media (max-width:640px){
-      .viewer{height: 72svh;}
+      .viewer{height:72svh;}
       .card-head{gap:6px}
       .actions{gap:6px}
       .btn{padding:9px 12px}
+
+      /* Make the title smaller on mobile */
+      .card-title{
+        font-size:16px;   /* adjust to 12px if you want even smaller */
+      }
     }
   </style>
 </head>
@@ -172,7 +180,7 @@
 
   <!-- Header -->
   <header class="header">
-    <img class="logo-img" src="BL_Technolas.png" alt="Bausch + Lomb | Technolas logo">
+    BL_Technolas.png
     <button class="btn secondary" id="themeBtn" title="Change theme">Theme</button>
   </header>
 
@@ -333,4 +341,3 @@
 </script>
 </body>
 </html>
-``
