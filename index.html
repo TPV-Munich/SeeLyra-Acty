@@ -7,54 +7,31 @@
   <title>Quick Guide – RealWear Navigator 520</title>
 
   <style>
-    /* ===================== THEME SYSTEM ===================== */
+    /* THEME */
     :root{
-      --accent:#089ca4;        /* teal by default */
-      --accent-2:#16c4cf;
-      --bg:#0b1020;
-      --bg-2:#0f152e;
+      --accent:#089ca4; --accent-2:#16c4cf;
+      --bg:#0b1020; --bg-2:#0f152e;
       --card:rgba(255,255,255,.08);
-      --text:#e8ecf4;
-      --muted:#b7c1d6;
+      --text:#e8ecf4; --muted:#b7c1d6;
       --border:rgba(255,255,255,.18);
       --shadow-lg:0 10px 30px rgba(0,0,0,.35);
     }
-    html[data-theme="teal"]{
-      --accent:#089ca4;
-      --accent-2:#15b8c1;
-      --bg:#0b1020;
-      --bg-2:#0f152e;
-      --card:rgba(255,255,255,.08);
-      --text:#e8ecf4;
-      --muted:#b7c1d6;
-      --border:rgba(255,255,255,.18);
-    }
+    html[data-theme="teal"]{ }
     html[data-theme="deep"]{
-      --accent:#4f72ff;
-      --accent-2:#71a1ff;
-      --bg:#0b0f1e;
-      --bg-2:#0e1632;
-      --card:rgba(255,255,255,.10);
-      --text:#e9eeff;
-      --muted:#bac6ea;
-      --border:rgba(255,255,255,.18);
+      --accent:#4f72ff; --accent-2:#71a1ff;
+      --bg:#0b0f1e; --bg-2:#0e1632; --card:rgba(255,255,255,.10);
+      --text:#e9eeff; --muted:#bac6ea; --border:rgba(255,255,255,.18);
     }
     html[data-theme="light"]{
-      --accent:#089ca4;
-      --accent-2:#16c4cf;
-      --bg:#f6f8fb;
-      --bg-2:#ffffff;
-      --card:rgba(0,0,0,.04);
-      --text:#0f182a;
-      --muted:#4b5a78;
-      --border:rgba(0,0,0,.12);
+      --accent:#089ca4; --accent-2:#16c4cf;
+      --bg:#f6f8fb; --bg-2:#ffffff; --card:rgba(0,0,0,.04);
+      --text:#0f182a; --muted:#4b5a78; --border:rgba(0,0,0,.12);
     }
 
-    /* ===================== BASE LAYOUT ===================== */
+    /* LAYOUT */
     html,body{height:100%}
     body{
-      margin:0;
-      color:var(--text);
+      margin:0; color:var(--text);
       background:
         radial-gradient(1200px 600px at 10% -10%, color-mix(in oklab, var(--accent) 28%, transparent), transparent 55%),
         radial-gradient(1000px 600px at 120% 10%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 55%),
@@ -63,99 +40,64 @@
     }
     .wrap{max-width:1100px;margin:32px auto;padding:0 16px}
 
-    /* ===== Header ===== */
-    .header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:18px;
-      gap:12px;
-    }
-    .logo-img{ width:420px;max-width:100%;height:auto;display:block; }
+    /* HEADER */
+    .header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+    .logo-img{width:420px;max-width:100%;height:auto;display:block}
 
-    /* ===== Card ===== */
+    /* CARD */
     .card{
-      border-radius:18px;
-      overflow:hidden;
+      border-radius:18px; overflow:hidden;
       background:linear-gradient(180deg,var(--card),var(--card));
-      box-shadow:var(--shadow-lg);
-      border:1px solid var(--border);
+      box-shadow:var(--shadow-lg); border:1px solid var(--border);
       backdrop-filter:saturate(120%) blur(6px);
     }
     .card-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding:14px 20px;
-      border-bottom:1px solid var(--border);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:14px 20px; border-bottom:1px solid var(--border);
     }
+    .card-title{font-weight:800; font-size:18px}
+    .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end}
 
-    /* Title */
-    .card-title{ font-size:18px; font-weight:800; }
-
-    .actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      align-items:center;
-      justify-content:flex-end;
-    }
-
-    /* ===== Buttons ===== */
+    /* BUTTONS */
     .btn{
-      appearance:none;border:none;cursor:pointer;
-      padding:10px 14px;border-radius:12px;font-weight:800;
-      color:#fff;
+      appearance:none;border:none;cursor:pointer;text-decoration:none;
+      padding:10px 14px;border-radius:12px;font-weight:800;color:#fff;
       background:linear-gradient(135deg,var(--accent),var(--accent-2));
       box-shadow:0 6px 18px color-mix(in oklab, var(--accent) 45%, transparent);
-      display:inline-flex;align-items:center;gap:6px;
-      transition:transform .08s ease, filter .15s ease;
-      text-decoration:none;
+      display:inline-flex;align-items:center;gap:6px;transition:transform .08s ease, filter .15s ease;
       font-size:15px; line-height:1; white-space:nowrap;
     }
     .btn:active{transform:scale(.97)}
-    .btn.secondary{ color:var(--text); background:transparent; border:1px solid var(--border); box-shadow:none; }
-    .btn.sm{ padding:7px 11px; border-radius:10px; font-size:13px; }
+    .btn.secondary{color:var(--text);background:transparent;border:1px solid var(--border);box-shadow:none}
+    .btn.sm{padding:7px 11px;border-radius:10px;font-size:13px}
 
-    /* ===== Viewer ===== */
-    .viewer{
-      height:75svh; background:#000; position:relative;
-    }
-    .viewer iframe, .viewer object{
-      width:100%; height:100%; border:0; display:block; background:#1a1a1a;
-    }
+    /* VIEWER (pdf.js in iframe) */
+    .viewer{height:75svh;background:#000;position:relative}
+    .viewer iframe{width:100%;height:100%;border:0;display:block;background:#121212}
 
-    /* Fallback panel */
     .fallback{
-      position:absolute;inset:0; display:flex;flex-direction:column;align-items:center;justify-content:center;
-      gap:12px;padding:20px;text-align:center;background:#0f0f0f;color:#dcdcdc;
+      position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:12px;padding:20px;text-align:center;background:#0f0f0f;color:#dcdcdc
     }
-    .fallback.hidden{display:none;}
-    .fallback .btn{ box-shadow:none; }
-    .fallback .btn.secondary{ background:#111;border-color:#333;color:#e6e6e6; }
+    .fallback.hidden{display:none}
 
-    /* ===== Footer ===== */
-    .foot{
-      padding:10px 20px; border-top:1px solid var(--border); font-size:13px; color:var(--muted);
-      display:flex; justify-content:space-between; gap:10px; align-items:center;
-    }
+    /* FOOTER */
+    .foot{padding:10px 20px;border-top:1px solid var(--border);font-size:13px;color:var(--muted);
+          display:flex;justify-content:space-between;gap:10px;align-items:center}
 
-    /* Small screens (phones) */
+    /* MOBILE TWEAKS */
     @media (max-width:640px){
-      .viewer{height:72svh;}
+      .viewer{height:72svh}
       .card-head{gap:8px}
-      .actions{ gap:6px; justify-content:flex-end; }
-      .btn{ padding:8px 12px; font-size:13.5px }
-      .btn.sm{ padding:6px 10px; font-size:12.5px }
-      .card-title{ font-size:16px; }
-      .actions > *{ flex:0 0 auto; }
+      .actions{gap:6px}
+      .btn{padding:8px 12px;font-size:13.5px}
+      .btn.sm{padding:6px 10px;font-size:12.5px}
+      .card-title{font-size:16px}
+      .actions>*{flex:0 0 auto}
     }
-
-    /* Super-narrow (older small phones) */
     @media (max-width:360px){
-      .btn{ font-size:12.5px; padding:7px 10px }
-      .btn.sm{ font-size:12px; padding:6px 9px }
+      .btn{font-size:12.5px;padding:7px 10px}
+      .btn.sm{font-size:12px;padding:6px 9px}
     }
   </style>
 </head>
@@ -165,7 +107,7 @@
 
   <!-- Header -->
   <header class="header">
-    BL_Technolas.png
+    <img class="logo-img" src="BL_Technolas.png" alt="Bausch + Lomb | Technolas logo">
     <button class="btn secondary sm" id="themeBtn" title="Change theme">Theme</button>
   </header>
 
@@ -181,15 +123,13 @@
     </div>
 
     <div class="viewer" id="viewer">
-      <!-- Desktop prefers iframe -->
-      <iframe id="pdfFrame" allow="fullscreen"></iframe>
-      <!-- Android prefers object; iOS will skip embed entirely -->
-      <object id="pdfObject" data="" type="application/pdf" aria-label="PDF"></object>
+      <!-- pdf.js viewer embedded inline -->
+      <iframe id="pdfIframe" allow="fullscreen"></iframe>
 
-      <!-- Fallback -->
+      <!-- Fallback (shows only if viewer fails) -->
       <div class="fallback hidden" id="fallbackMsg">
         <strong>Can’t display the PDF here.</strong>
-        <div>Some mobile browsers block embedded PDFs. Use <b>Open</b> to view it in a new tab.</div>
+        <div>Use <b>Open</b> to view it in a new tab.</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
           <a class="btn sm" id="fallbackOpen">Open</a>
           <a class="btn sm secondary" id="fallbackDownload" download="TPV-Munich.pdf">Download</a>
@@ -198,98 +138,57 @@
     </div>
 
     <div class="foot">
-      <div>Tip: If the PDF doesn’t appear on some phones, tap <strong>Open</strong>.</div>
+      <div>Tip: Pinch to zoom inside the viewer.</div>
       <div>Powered By Technolas Bausch + Lomb</div>
     </div>
-
   </section>
 
 </div>
 
 <script>
-  /* ================ CONFIG ================ */
-  const pdfUrl = 'TPV%20Munich.pdf';
+  /* === CONFIG === */
+  const pdfPath   = 'TPV%20Munich.pdf'; // your PDF next to index.html
+  // pdf.js viewer page (local). The viewer loads viewer.mjs internally.
+  const viewerSrc = `./pdfjs/web/viewer.html?file=../${pdfPath}#zoom=page-width`;
 
-  const frame   = document.getElementById('pdfFrame');
-  const obj     = document.getElementById('pdfObject');
+  /* Elements */
+  const iframe  = document.getElementById('pdfIframe');
   const viewer  = document.getElementById('viewer');
-  const fsBtn   = document.getElementById('fullscreenBtn');
-  const themeBtn= document.getElementById('themeBtn');
+  const fallbackMsg = document.getElementById('fallbackMsg');
 
   const openBtn = document.getElementById('openBtn');
   const dlBtn   = document.getElementById('downloadBtn');
+  const fsBtn   = document.getElementById('fullscreenBtn');
+  const themeBtn= document.getElementById('themeBtn');
 
-  const fallbackMsg = document.getElementById('fallbackMsg');
   const fbOpen = document.getElementById('fallbackOpen');
   const fbDl   = document.getElementById('fallbackDownload');
 
-  // Device detection
-  const ua = navigator.userAgent || '';
-  const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-  const isAndroid = /Android/.test(ua);
-  const isMobile = isIOS || isAndroid;
+  /* Load pdf.js viewer inline */
+  function loadViewer(){ iframe.src = viewerSrc; }
+  loadViewer();
 
-  /* ================ BUILD SRC WITH FIT PARAMS ================ */
-  function buildPdfSrc() {
-    if (isMobile && !isIOS) return `${pdfUrl}#view=FitH`;     // Android: horizontal fit
-    return `${pdfUrl}#zoom=page-width&view=FitH`;             // Desktop (and not used for iOS)
-  }
+  /* Buttons */
+  openBtn.onclick = () => window.open(pdfPath, '_blank', 'noopener,noreferrer');
+  [dlBtn, fbDl].forEach(a => a.href = pdfPath);
+  fbOpen.href = pdfPath;
 
-  function useIframe() {
-    frame.style.display = 'block';
-    obj.style.display = 'none';
-    frame.src = buildPdfSrc();
-  }
-  function useObject() {
-    obj.style.display = 'block';
-    frame.style.display = 'none';
-    obj.data = buildPdfSrc();
-  }
-
-  function applyRenderer() {
-    if (isIOS) {
-      // iOS: open the PDF directly (same tab). If blocked, show fallback.
-      try {
-        // Prefer replacing current tab (feels native and avoids popup-blocker)
-        window.location.assign(pdfUrl);
-      } catch (_) {
-        // If navigation is somehow blocked, show fallback
-        frame.style.display = 'none';
-        obj.style.display = 'none';
-        fallbackMsg.classList.remove('hidden');
-      }
-      return;
-    }
-    if (isAndroid) useObject();
-    else useIframe();
-  }
-
-  /* ================ ACTIONS ================ */
-  openBtn.onclick = () => window.open(pdfUrl, '_blank', 'noopener,noreferrer');
-  [dlBtn, fbDl].forEach(a => a.href = pdfUrl);
-  fbOpen.href = pdfUrl;
-
-  /* ================ FULLSCREEN ================ */
+  /* Fullscreen the container */
   async function toggleFullscreen() {
     try {
       if (!document.fullscreenElement) {
-        await (viewer.requestFullscreen?.call(viewer) ||
-               viewer.webkitRequestFullscreen?.call(viewer));
+        await (viewer.requestFullscreen?.call(viewer) || viewer.webkitRequestFullscreen?.call(viewer));
       } else {
-        await (document.exitFullscreen?.call(document) ||
-               document.webkitExitFullscreen?.call(document));
+        await (document.exitFullscreen?.call(document) || document.webkitExitFullscreen?.call(document));
       }
-    } catch (e) {
-      console.error('Fullscreen error:', e);
-    }
+    } catch (e) { console.error('Fullscreen error:', e); }
   }
   fsBtn.onclick = toggleFullscreen;
-
   document.addEventListener('fullscreenchange', () => {
     fsBtn.textContent = document.fullscreenElement ? 'Exit full screen' : 'Full screen';
   });
 
-  /* ================ THEME ================ */
+  /* Theme toggle */
   const themes = ['teal','deep','light'];
   const saved = localStorage.getItem('pdf_theme') || 'teal';
   if (themes.includes(saved)) document.documentElement.setAttribute('data-theme', saved);
@@ -301,41 +200,21 @@
     localStorage.setItem('pdf_theme', next);
   });
 
-  /* ================ INIT & FALLBACKS ================ */
-  applyRenderer();
+  /* Fallback if viewer fails to load */
+  setTimeout(() => {
+    if (!iframe.contentWindow) {
+      fallbackMsg.classList.remove('hidden');
+    } else {
+      fallbackMsg.classList.add('hidden');
+    }
+  }, 1200);
 
-  // If not iOS and embedding still fails, show fallback after a short check
-  if (!isIOS) {
-    setTimeout(() => {
-      const blocked =
-        (isAndroid && !obj.contentDocument) ||
-        (!isAndroid && !frame.contentDocument);
-      if (blocked) {
-        fallbackMsg.classList.remove('hidden');
-      } else {
-        fallbackMsg.classList.add('hidden');
-      }
-    }, 900);
-  }
-
-  // Re-apply on orientation change (not for iOS auto-open)
+  /* Refit on orientation change */
   let resizeTo;
   window.addEventListener('resize', () => {
-    if (isIOS) return;
     clearTimeout(resizeTo);
-    resizeTo = setTimeout(() => {
-      if (isAndroid) obj.data = buildPdfSrc();
-      else frame.src = buildPdfSrc();
-    }, 200);
+    resizeTo = setTimeout(() => { iframe.src = viewerSrc; }, 220);
   });
-
-  // Optional console warning if file missing
-  fetch(pdfUrl, { method:'GET' }).then(r => {
-    if (!r.ok) {
-      console.warn('PDF not found or blocked:', r.status);
-      fallbackMsg.classList.remove('hidden');
-    }
-  }).catch(() => {});
 </script>
 </body>
 </html>
