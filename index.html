@@ -71,9 +71,7 @@
       margin-bottom:18px;
       gap:12px;
     }
-    .logo-img{
-      width:420px;max-width:100%;height:auto;display:block;
-    }
+    .logo-img{ width:420px;max-width:100%;height:auto;display:block; }
 
     /* ===== Card ===== */
     .card{
@@ -93,11 +91,8 @@
       border-bottom:1px solid var(--border);
     }
 
-    /* Title size tuned for mobile */
-    .card-title{
-      font-size:18px;   /* desktop/tablet */
-      font-weight:800;
-    }
+    /* Title */
+    .card-title{ font-size:18px; font-weight:800; }
 
     .actions{
       display:flex;
@@ -117,81 +112,50 @@
       display:inline-flex;align-items:center;gap:6px;
       transition:transform .08s ease, filter .15s ease;
       text-decoration:none;
-      font-size:15px;
-      line-height:1;    /* compact */
-      white-space:nowrap;
+      font-size:15px; line-height:1; white-space:nowrap;
     }
     .btn:active{transform:scale(.97)}
-    .btn.secondary{
-      color:var(--text);
-      background:transparent;
-      border:1px solid var(--border);
-      box-shadow:none;
-    }
-
-    /* Compact button variant for phones */
-    .btn.sm{
-      padding:8px 12px;
-      border-radius:10px;
-      font-size:14px;
-    }
+    .btn.secondary{ color:var(--text); background:transparent; border:1px solid var(--border); box-shadow:none; }
+    .btn.sm{ padding:7px 11px; border-radius:10px; font-size:13px; }
 
     /* ===== Viewer ===== */
     .viewer{
-      /* svh fits phone screen better with browser bars */
-      height:75svh;
-      background:#000;
-      position:relative;
+      height:75svh; background:#000; position:relative;
     }
-    .viewer iframe,
-    .viewer object{
-      width:100%;
-      height:100%;
-      border:0;
-      display:block;
-      background:#1a1a1a;
+    .viewer iframe, .viewer object{
+      width:100%; height:100%; border:0; display:block; background:#1a1a1a;
     }
 
+    /* Fallback panel */
     .fallback{
-      position:absolute;inset:0;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      gap:12px;padding:20px;text-align:center;background:#0f0f0f;
-      color:#dcdcdc;
+      position:absolute;inset:0; display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:12px;padding:20px;text-align:center;background:#0f0f0f;color:#dcdcdc;
     }
     .fallback.hidden{display:none;}
     .fallback .btn{ box-shadow:none; }
-    .fallback .btn.secondary{
-      background:#111;border-color:#333;color:#e6e6e6;
-    }
+    .fallback .btn.secondary{ background:#111;border-color:#333;color:#e6e6e6; }
 
     /* ===== Footer ===== */
     .foot{
-      padding:10px 20px;
-      border-top:1px solid var(--border);
-      font-size:13px;
-      color:var(--muted);
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:center;
+      padding:10px 20px; border-top:1px solid var(--border); font-size:13px; color:var(--muted);
+      display:flex; justify-content:space-between; gap:10px; align-items:center;
     }
 
     /* Small screens (phones) */
     @media (max-width:640px){
       .viewer{height:72svh;}
       .card-head{gap:8px}
-      .actions{
-        gap:6px;
-        justify-content:flex-end;
-      }
-      .btn{padding:9px 12px;font-size:14px}
-      .btn.sm{padding:7px 11px;font-size:13px}
-
-      /* Make the title smaller on mobile */
+      .actions{ gap:6px; justify-content:flex-end; }
+      .btn{ padding:8px 12px; font-size:13.5px }
+      .btn.sm{ padding:6px 10px; font-size:12.5px }
       .card-title{ font-size:16px; }
-
-      /* Make header controls sit neatly on one line when possible */
       .actions > *{ flex:0 0 auto; }
+    }
+
+    /* Super-narrow (older small phones) */
+    @media (max-width:360px){
+      .btn{ font-size:12.5px; padding:7px 10px }
+      .btn.sm{ font-size:12px; padding:6px 9px }
     }
   </style>
 </head>
@@ -201,14 +165,14 @@
 
   <!-- Header -->
   <header class="header">
-    <img class="logo-img" src="BL_Technolas.png" alt="Bausch + Lomb | Technolas logo">
+    BL_Technolas.png
     <button class="btn secondary sm" id="themeBtn" title="Change theme">Theme</button>
   </header>
 
   <!-- Card -->
   <section class="card">
     <div class="card-head">
-      <div class="card-title">Quick Guide – RealWear Navigator-520</div>
+      <div class="card-title">SeeLyra Acty Guide Support — PDF</div>
       <div class="actions">
         <button class="btn sm" id="openBtn" title="Open in new tab">Open</button>
         <a class="btn sm" id="downloadBtn" download="TPV-Munich.pdf" title="Download PDF">Download</a>
@@ -219,7 +183,7 @@
     <div class="viewer" id="viewer">
       <!-- Desktop prefers iframe -->
       <iframe id="pdfFrame" allow="fullscreen"></iframe>
-      <!-- Mobile prefers object -->
+      <!-- Android prefers object; iOS will skip embed entirely -->
       <object id="pdfObject" data="" type="application/pdf" aria-label="PDF"></object>
 
       <!-- Fallback -->
@@ -244,7 +208,6 @@
 
 <script>
   /* ================ CONFIG ================ */
-  // Your file is in the root next to index.html
   const pdfUrl = 'TPV%20Munich.pdf';
 
   const frame   = document.getElementById('pdfFrame');
@@ -268,8 +231,8 @@
 
   /* ================ BUILD SRC WITH FIT PARAMS ================ */
   function buildPdfSrc() {
-    if (isMobile) return `${pdfUrl}#view=FitH`;         // Mobile: horizontal fit
-    return `${pdfUrl}#zoom=page-width&view=FitH`;       // Desktop
+    if (isMobile && !isIOS) return `${pdfUrl}#view=FitH`;     // Android: horizontal fit
+    return `${pdfUrl}#zoom=page-width&view=FitH`;             // Desktop (and not used for iOS)
   }
 
   function useIframe() {
@@ -284,14 +247,20 @@
   }
 
   function applyRenderer() {
-    // On iOS, many versions block embed; skip straight to fallback view
     if (isIOS) {
-      frame.style.display = 'none';
-      obj.style.display = 'none';
-      fallbackMsg.classList.remove('hidden');
+      // iOS: open the PDF directly (same tab). If blocked, show fallback.
+      try {
+        // Prefer replacing current tab (feels native and avoids popup-blocker)
+        window.location.assign(pdfUrl);
+      } catch (_) {
+        // If navigation is somehow blocked, show fallback
+        frame.style.display = 'none';
+        obj.style.display = 'none';
+        fallbackMsg.classList.remove('hidden');
+      }
       return;
     }
-    if (isMobile) useObject();
+    if (isAndroid) useObject();
     else useIframe();
   }
 
@@ -339,8 +308,8 @@
   if (!isIOS) {
     setTimeout(() => {
       const blocked =
-        (isMobile && !obj.contentDocument) ||
-        (!isMobile && !frame.contentDocument);
+        (isAndroid && !obj.contentDocument) ||
+        (!isAndroid && !frame.contentDocument);
       if (blocked) {
         fallbackMsg.classList.remove('hidden');
       } else {
@@ -349,13 +318,13 @@
     }, 900);
   }
 
-  // Re-apply on orientation change (not for iOS forced fallback)
+  // Re-apply on orientation change (not for iOS auto-open)
   let resizeTo;
   window.addEventListener('resize', () => {
     if (isIOS) return;
     clearTimeout(resizeTo);
     resizeTo = setTimeout(() => {
-      if (isMobile) obj.data = buildPdfSrc();
+      if (isAndroid) obj.data = buildPdfSrc();
       else frame.src = buildPdfSrc();
     }, 200);
   });
