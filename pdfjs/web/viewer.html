@@ -21,21 +21,24 @@ Adobe CMap resources are covered by their own copyright but the same license:
 See https://github.com/adobe-type-tools/cmap-resources
 -->
 <html dir="ltr" mozdisallowselectionprint>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="google" content="notranslate" />
-    <title>PDF.js viewer</title>
 
-<!-- This snippet is used in production (included from viewer.html) -->
-<link rel="resource" type="application/l10n" href="locale/locale.json" />
-<script src="../build/pdf.mjs" type="module"></script>
+    
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="google" content="notranslate" />
+  <title>PDF.js viewer</title>
 
-    <link rel="stylesheet" href="viewer.css" />
+  <!-- Make YOUR PDF the default, so viewer.html or viewer.html? still loads it -->
+  <meta name="pdfjs-default-url" content="../TPV%20Munich.pdf" />
 
+  <!-- Standard pdf.js includes (keep these exactly as in your package) -->
+  <link rel="resource" type="application/l10n" href="locale/locale.json" />
+  <script src="../build/pdf.mjs" type="module"></script>
+
+  <link rel="stylesheet" href="viewer.css" />
   <script src="viewer.mjs" type="module"></script>
-  </head>
-
+</head>
   <body tabindex="0">
     <div id="outerContainer">
       <span id="viewer-alert" class="visuallyHidden" role="alert"></span>
