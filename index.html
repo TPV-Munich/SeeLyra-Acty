@@ -7,7 +7,6 @@
   <title>Quick Guide – RealWear Navigator 520</title>
 
   <style>
-    /* THEME */
     :root{
       --accent:#089ca4; --accent-2:#16c4cf;
       --bg:#0b1020; --bg-2:#0f152e;
@@ -16,19 +15,6 @@
       --border:rgba(255,255,255,.18);
       --shadow-lg:0 10px 30px rgba(0,0,0,.35);
     }
-    html[data-theme="teal"]{ }
-    html[data-theme="deep"]{
-      --accent:#4f72ff; --accent-2:#71a1ff;
-      --bg:#0b0f1e; --bg-2:#0e1632; --card:rgba(255,255,255,.10);
-      --text:#e9eeff; --muted:#bac6ea; --border:rgba(255,255,255,.18);
-    }
-    html[data-theme="light"]{
-      --accent:#089ca4; --accent-2:#16c4cf;
-      --bg:#f6f8fb; --bg-2:#ffffff; --card:rgba(0,0,0,.04);
-      --text:#0f182a; --muted:#4b5a78; --border:rgba(0,0,0,.12);
-    }
-
-    /* LAYOUT */
     html,body{height:100%}
     body{
       margin:0; color:var(--text);
@@ -40,11 +26,9 @@
     }
     .wrap{max-width:1100px;margin:32px auto;padding:0 16px}
 
-    /* HEADER */
     .header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
     .logo-img{width:420px;max-width:100%;height:auto;display:block}
 
-    /* CARD */
     .card{
       border-radius:18px; overflow:hidden;
       background:linear-gradient(180deg,var(--card),var(--card));
@@ -58,7 +42,6 @@
     .card-title{font-weight:800; font-size:18px}
     .actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end}
 
-    /* BUTTONS */
     .btn{
       appearance:none;border:none;cursor:pointer;text-decoration:none;
       padding:10px 14px;border-radius:12px;font-weight:800;color:#fff;
@@ -71,7 +54,6 @@
     .btn.secondary{color:var(--text);background:transparent;border:1px solid var(--border);box-shadow:none}
     .btn.sm{padding:7px 11px;border-radius:10px;font-size:13px}
 
-    /* VIEWER (pdf.js in iframe) */
     .viewer{height:75svh;background:#000;position:relative}
     .viewer iframe{width:100%;height:100%;border:0;display:block;background:#121212}
 
@@ -81,11 +63,9 @@
     }
     .fallback.hidden{display:none}
 
-    /* FOOTER */
     .foot{padding:10px 20px;border-top:1px solid var(--border);font-size:13px;color:var(--muted);
           display:flex;justify-content:space-between;gap:10px;align-items:center}
 
-    /* MOBILE TWEAKS */
     @media (max-width:640px){
       .viewer{height:72svh}
       .card-head{gap:8px}
@@ -107,7 +87,7 @@
 
   <!-- Header -->
   <header class="header">
-    <img class="logo-img" src="BL_Technolas.png" alt="Bausch + Lomb | Technolas logo">
+    BL_Technolas.png
     <button class="btn secondary sm" id="themeBtn" title="Change theme">Theme</button>
   </header>
 
@@ -147,11 +127,10 @@
 
 <script>
   /* === CONFIG === */
-  const pdfPath   = 'TPV%20Munich.pdf'; // your PDF next to index.html
-  // pdf.js viewer page (local). The viewer loads viewer.mjs internally.
+  const pdfPath   = 'TPV%20Munich.pdf'; // file sits next to index.html
+  // IMPORTANT: include file=../... or the viewer shows its sample PDF
   const viewerSrc = `./pdfjs/web/viewer.html?file=../${pdfPath}#zoom=page-width`;
 
-  /* Elements */
   const iframe  = document.getElementById('pdfIframe');
   const viewer  = document.getElementById('viewer');
   const fallbackMsg = document.getElementById('fallbackMsg');
@@ -164,16 +143,15 @@
   const fbOpen = document.getElementById('fallbackOpen');
   const fbDl   = document.getElementById('fallbackDownload');
 
-  /* Load pdf.js viewer inline */
-  function loadViewer(){ iframe.src = viewerSrc; }
-  loadViewer();
+  // Load viewer
+  iframe.src = viewerSrc;
 
-  /* Buttons */
+  // Buttons
   openBtn.onclick = () => window.open(pdfPath, '_blank', 'noopener,noreferrer');
   [dlBtn, fbDl].forEach(a => a.href = pdfPath);
   fbOpen.href = pdfPath;
 
-  /* Fullscreen the container */
+  // Fullscreen
   async function toggleFullscreen() {
     try {
       if (!document.fullscreenElement) {
@@ -188,7 +166,7 @@
     fsBtn.textContent = document.fullscreenElement ? 'Exit full screen' : 'Full screen';
   });
 
-  /* Theme toggle */
+  // Theme toggle
   const themes = ['teal','deep','light'];
   const saved = localStorage.getItem('pdf_theme') || 'teal';
   if (themes.includes(saved)) document.documentElement.setAttribute('data-theme', saved);
@@ -200,7 +178,7 @@
     localStorage.setItem('pdf_theme', next);
   });
 
-  /* Fallback if viewer fails to load */
+  // Fallback if viewer fails
   setTimeout(() => {
     if (!iframe.contentWindow) {
       fallbackMsg.classList.remove('hidden');
@@ -209,7 +187,7 @@
     }
   }, 1200);
 
-  /* Refit on orientation change */
+  // Refit on orientation change
   let resizeTo;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTo);
