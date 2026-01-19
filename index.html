@@ -40,8 +40,18 @@
     .wrap{max-width:1100px;margin:28px auto;padding:0 16px}
 
     /* Header */
-    .header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-    .logo { color:var(--muted); font-weight:700; font-size:14px; }
+    .header{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px
+    }
+    /* ✅ render the logo image */
+    .logo-img{
+      display:block;
+      height:28px;                 /* visible but not huge */
+      max-width:260px;             /* keeps aspect ratio */
+      width:auto;
+      object-fit:contain;
+      filter: drop-shadow(0 1px 0 rgba(0,0,0,.2));
+    }
 
     /* Buttons */
     .btn{
@@ -72,11 +82,7 @@
 
     /* Viewer */
     .viewer{ position:relative; height:75svh; background:#000; overflow:hidden; }
-    /* We put the iframe inside a scale wrapper so we can "shrink" on iOS if needed */
-    .scaleWrap{
-      width:100%; height:100%;
-      transform-origin: top center;
-    }
+    .scaleWrap{ width:100%; height:100%; transform-origin: top center; }
     .viewer iframe{ width:100%; height:100%; border:0; display:block; background:#121212; }
 
     /* iOS banner */
@@ -92,7 +98,7 @@
     }
     .iosBanner .small{opacity:.9; font-size:12.5px}
     .iosBanner .row{display:flex; gap:8px; align-items:center}
-    .iosBanner .close{background:transparent;border:0;color:#fff;opacity:.8;cursor:pointer;font-size:18px;line-height:1}
+    .iosBanner .close{background:transparent;border:0;color:#fff;opacity:.85;cursor:pointer;font-size:18px;line-height:1}
 
     /* Footer */
     .foot{
@@ -108,6 +114,7 @@
       .btn{padding:7px 11px;font-size:12.5px}
       .btn.icon{font-size:16px;padding:6px 9px}
       .actions{gap:6px}
+      .logo-img{ height:24px; max-width:220px; }
     }
   </style>
 </head>
@@ -115,7 +122,8 @@
 <body>
   <div class="wrap">
     <header class="header">
-      <div class="logo">BL_Technolas.png</div>
+      <!-- ✅ Use the real image file -->
+      <img src="BL_Technolas.png" alt="Technolas Bausch + Lomb" class="logo-img">
       <button id="themeBtn" class="btn secondary" type="button">Theme</button>
     </header>
 
@@ -130,7 +138,7 @@
       </div>
 
       <div class="viewer" id="viewer">
-        <!-- iOS tip banner (hidden by default) -->
+        <!-- iOS tip banner -->
         <div id="iosBanner" class="iosBanner" style="display:none">
           <div class="small">On iPhone/iPad, embedded PDFs can look zoomed. Tap <b>Open</b> for best view.</div>
           <div class="row">
@@ -154,15 +162,15 @@
 
   <script>
     // ===== CONFIG =====
-    const pdfUrl = 'TPV%20Munich.pdf'; // keep name & case exact
+    const pdfUrl = 'TPV%20Munich.pdf'; // exact name & case
 
     const frame     = document.getElementById('pdfFrame');
     const scaleWrap = document.getElementById('scaleWrap');
     const viewerEl  = document.getElementById('viewer');
 
-    const iosBanner = document.getElementById('iosBanner');
-    const bannerOpen= document.getElementById('bannerOpen');
-    const bannerClose=document.getElementById('bannerClose');
+    const iosBanner  = document.getElementById('iosBanner');
+    const bannerOpen = document.getElementById('bannerOpen');
+    const bannerClose= document.getElementById('bannerClose');
 
     // Device detection
     const ua = navigator.userAgent || '';
@@ -170,28 +178,19 @@
     const isAndroid = /Android/.test(ua);
     const isMobile = isIOS || isAndroid;
 
-    // ===== PDF LOAD with best-effort zoom =====
-    // Many engines honor #view=FitH (fit width) or #zoom=<percent>.
-    // iOS often ignores these, so we also apply a CSS scale as a backup.
+    // Build the PDF URL with a friendly initial zoom
     function buildPdfSrc() {
-      if (isMobile) {
-        // Start smaller on phones
-        return `${pdfUrl}#zoom=85`;
-      }
-      // Desktop: fit horizontally
-      return `${pdfUrl}#view=FitH`;
+      if (isMobile) return `${pdfUrl}#zoom=85`; // smaller on phones
+      return `${pdfUrl}#view=FitH`;            // fit width on desktop
     }
 
-    function loadPDF(){
-      frame.src = buildPdfSrc();
-    }
+    function loadPDF(){ frame.src = buildPdfSrc(); }
     loadPDF();
 
     // Buttons
-    document.getElementById('openBtn').onclick = () => window.open(pdfUrl,'_blank','noopener,noreferrer');
-    document.getElementById('downloadBtn').href = pdfUrl;
+    document.getElementById('openBtn').onclick    = () => window.open(pdfUrl,'_blank','noopener,noreferrer');
+    document.getElementById('downloadBtn').href   = pdfUrl;
 
-    // Fullscreen (use container so controls remain visible on exit)
     document.getElementById('fullscreenBtn').onclick = async () => {
       try{
         if (!document.fullscreenElement) {
@@ -201,6 +200,10 @@
         }
       }catch(e){ console.error('Fullscreen error:', e); }
     };
+    document.addEventListener('fullscreenchange', () => {
+      const b = document.getElementById('fullscreenBtn');
+      b.textContent = document.fullscreenElement ? '⤢' : '⛶'; // change icon on state
+    });
 
     // Theme toggle
     const themes = ['teal','deep','light'];
@@ -213,23 +216,20 @@
       localStorage.setItem('pdf_theme', next);
     };
 
-    // ===== iOS fallback banner + visual scale for better fit =====
-    // Show banner on iOS, and gently scale the iframe as backup (e.g., 0.9)
+    // ===== iOS: show banner and apply visual scale as backup =====
     function applyMobileScaling(){
       if (isIOS) {
-        // Show the tip banner
         iosBanner.style.display = 'flex';
         bannerOpen.href = pdfUrl;
         bannerClose.onclick = () => iosBanner.style.display = 'none';
 
-        // Apply a CSS scale (backup if #zoom is ignored by the engine)
-        const scale = 0.90;                 // smaller = more of the page visible
+        // CSS scale to show more of the page if #zoom is ignored by the engine
+        const scale = 0.90;                 // try 0.85 if you want even smaller
         scaleWrap.style.transform = `scale(${scale})`;
-        // Expand wrapper so the scaled content still fills the viewport box
         scaleWrap.style.width  = `${100/scale}%`;
         scaleWrap.style.height = `${100/scale}%`;
-      } else if (isAndroid) {
-        // Android usually honors #zoom; no extra scaling needed
+      } else {
+        // Android/desktop usually honor #zoom
         scaleWrap.style.transform = 'none';
         scaleWrap.style.width = '100%';
         scaleWrap.style.height = '100%';
@@ -237,7 +237,7 @@
     }
     applyMobileScaling();
 
-    // Re-apply on orientation change / resize (helps FitH and scaling)
+    // Re-apply on orientation change
     let resizeTo;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTo);
@@ -246,14 +246,6 @@
         applyMobileScaling();
       }, 220);
     });
-
-    // Optional: if the PDF fails to render at all, show the banner as guidance
-    setTimeout(() => {
-      const likelyBlocked = !frame.contentDocument && frame.src;
-      if (isIOS && likelyBlocked) {
-        iosBanner.style.display = 'flex';
-      }
-    }, 1000);
   </script>
 </body>
 </html>
